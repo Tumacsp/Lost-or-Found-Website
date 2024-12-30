@@ -20,14 +20,12 @@ py -m venv myvenv
 myvenv\Scripts\activate.bat
 ```
 
-### Run the Website
-
+# Run the Website
 ## Run the Frontend
 ต้องอยู่ใน Folder frontend
 ```bash
 npm start
 ```
-
 ## Run the Backend
 ต้องอยู่ใน Folder backend
 ```bash
