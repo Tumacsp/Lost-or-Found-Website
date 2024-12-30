@@ -21,15 +21,12 @@ myvenv\Scripts\activate.bat
 ```
 
 ## Run the Website
-วิธีการเปิดโปรเจคให้ทำงานได้
 
-### 1. Run the Frontend
-ต้องอยู่ใน Folder frontend
+### 1. Run the Frontend ต้องอยู่ใน Folder frontend
 ```bash
 npm start
 ```
-### 2. Run the Backend
-ต้องอยู่ใน Folder backend
+### 2. Run the Backend ต้องอยู่ใน Folder backend
 ```bash
 python manage.py runserver
 ```
