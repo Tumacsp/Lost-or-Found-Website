@@ -21,6 +21,8 @@ myvenv\Scripts\activate.bat
 ```
 
 # Run the Website
+วิธีการเปิดโปรเจคให้ทำงานได้
+
 ## Run the Frontend
 ต้องอยู่ใน Folder frontend
 ```bash
