@@ -197,3 +197,15 @@ thumb
 sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/react,django
+backend/myvenv/pyvenv.cfg
+backend/myvenv/Scripts/activate
+backend/myvenv/Scripts/activate.bat
+backend/myvenv/Scripts/Activate.ps1
+backend/myvenv/Scripts/deactivate.bat
+backend/myvenv/Scripts/django-admin.exe
+backend/myvenv/Scripts/pip.exe
+backend/myvenv/Scripts/pip3.10.exe
+backend/myvenv/Scripts/pip3.exe
+backend/myvenv/Scripts/python.exe
+backend/myvenv/Scripts/pythonw.exe
+backend/myvenv/Scripts/sqlformat.exe
