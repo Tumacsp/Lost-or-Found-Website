@@ -1,5 +1,5 @@
 #ignoreEnvironment
-myvenv/
+/myvenv/
 */migrations/
 */migrations/*.pyc
 */migrations/*.pyo
