@@ -8,13 +8,13 @@ Project ของ วิชา CLIENT-SIDE WEB DEVELOPMENT (2/2024) รหัส
 
 ## Setup Instructions
 
-### 1. Create a virtual environment (Windows)
+### 1. Create Django a virtual environment (Windows)
 ```bash
 cd backend
 py -m venv myvenv
 ```
 
-### 2. Activate virtual environment (Windows)
+### 2. Activate Django virtual environment (Windows)
 เมื่อสร้าง virtual environment เรียบร้อยแล้ว ให้ทำการ activate เพื่อเริ่มใช้งาน:
 ```bash
 myvenv\Scripts\activate.bat
