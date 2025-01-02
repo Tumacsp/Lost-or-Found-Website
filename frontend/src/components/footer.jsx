@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-800 p-4 mt-8">
       <div className="container mx-auto text-center text-white">
-        <p>&copy; {new Date().getFullYear()} Lost & Found. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Lost or Found. All rights reserved.</p>
       </div>
     </footer>
   );

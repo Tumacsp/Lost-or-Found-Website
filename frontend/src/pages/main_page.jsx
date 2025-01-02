@@ -8,7 +8,7 @@ const MainPage = () => {
       <Navbar />
       <main className="flex-grow">
         <div className="container mx-auto p-6">
-          <h2 className="text-2xl font-bold text-center mb-4">Welcome to Lost & Found</h2>
+          <h2 className="text-2xl font-bold text-center mb-4">Welcome to Lost or Found Website</h2>
           <p className="text-center text-gray-700 mb-6">
             Easily report lost items or find something you've misplaced. Start by exploring the options below.
           </p>
