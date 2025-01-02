@@ -35,7 +35,7 @@ const RegisterPage = () => {
             <label htmlFor="password1" className="block text-sm font-medium text-gray-700">Password</label>
             <input
               id="password1"
-              type="password1"
+              type="password"
               placeholder="********"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
             />
@@ -44,7 +44,7 @@ const RegisterPage = () => {
             <label htmlFor="password2" className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <input
               id="password2"
-              type="password2"
+              type="password"
               placeholder="********"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
             />
