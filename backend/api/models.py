@@ -19,3 +19,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     status  = models.CharField(max_length=100)
     created_at = models.CharField(max_length=100)
+
+class Bookmark(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
