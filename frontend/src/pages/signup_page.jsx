@@ -52,7 +52,7 @@ const RegisterPage = () => {
 
       localStorage.setItem('token', response.data.token);
       axiosInstance.defaults.headers.common['Authorization'] = `Token ${response.data.token}`;
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred during registration');
     } finally {
