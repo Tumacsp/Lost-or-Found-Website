@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
+import { Link } from "react-router-dom";
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
@@ -97,9 +98,9 @@ const ForgotPasswordPage = () => {
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
             Remember your password?{' '}
-            <a href="/login" className="text-blue-500 hover:underline">
+            <Link to="/login" className="text-blue-500 hover:underline">
               Back to login
-            </a>
+            </Link>
           </p>
         </div>
       </div>

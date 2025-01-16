@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
+import { Link } from "react-router-dom";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -187,21 +188,21 @@ const RegisterPage = () => {
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
-            <a href="/login" className="text-green-500 hover:underline">
+            <Link to="/login" className="text-green-500 hover:underline">
               Login
-            </a>
+            </Link>
           </p>
         </div>
 
         <p className="text-sm text-gray-500 text-center mt-6">
           By clicking continue, you agree to our{" "}
-          <a href="/terms" className="text-green-500 hover:underline">
+          <Link to="/terms" className="text-green-500 hover:underline">
             Terms of Service
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a href="/privacy" className="text-green-500 hover:underline">
+          <Link to="/privacy" className="text-green-500 hover:underline">
             Privacy Policy
-          </a>
+          </Link>
           .
         </p>
       </div>
