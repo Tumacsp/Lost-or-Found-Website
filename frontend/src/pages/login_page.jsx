@@ -11,23 +11,6 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({
@@ -45,11 +28,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
+    setErrors({});
     setIsLoading(true);
 
     try {
@@ -62,9 +41,11 @@ const LoginPage = () => {
       }));
       navigate('/');
     } catch (err) {
-      setErrors({
-        submit: err.response?.data?.message || 'An error occurred during login'
-      });
+      if (err.response?.data) {
+        setErrors(err.response.data);
+      } else {
+        setErrors({ non_field_errors: ['An error occurred during login'] });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -74,11 +55,11 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-blue-200">
       <div className="w-full max-w-md bg-gray-100 rounded-lg shadow-md p-8">
         <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">Welcome back</h2>
-        <p className="text-gray-600 text-center mb-6">Login to your Lost or Found account</p>
+        <p className="text-gray-600 text-center mb-6">Login to your account</p>
         
-        {errors.submit && (
+        {errors.non_field_errors && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {errors.submit}
+            {errors.non_field_errors.join(', ')}
           </div>
         )}
 
@@ -96,9 +77,10 @@ const LoginPage = () => {
               className={`mt-1 block w-full px-4 py-2 border ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+              required
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.email.join(', ')}</p>
             )}
           </div>
 
@@ -115,9 +97,10 @@ const LoginPage = () => {
               className={`mt-1 block w-full px-4 py-2 border ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               } rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+              required
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.password.join(', ')}</p>
             )}
           </div>
 
@@ -139,7 +122,7 @@ const LoginPage = () => {
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <a href="/signup" className="text-blue-500 hover:underline">Sign up</a>
+            <a href="/register" className="text-blue-500 hover:underline">Sign up</a>
           </p>
         </div>
       </div>
