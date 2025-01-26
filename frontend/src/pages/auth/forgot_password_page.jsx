@@ -35,7 +35,7 @@ const ForgotPasswordPage = () => {
     setIsLoading(true);
 
     try {
-      await axiosInstance.post('http://localhost:8000/auth/forgot-password/', { email });
+      await axiosInstance.post('auth/forgot-password/', { email });
       setStatus({
         type: 'success',
         message: 'Password reset instructions have been sent to your email'
