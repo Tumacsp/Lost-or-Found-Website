@@ -36,3 +36,5 @@ class Post(models.Model):
 class Bookmark(models.Model):
     post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+User._meta.get_field('email')._unique = True
