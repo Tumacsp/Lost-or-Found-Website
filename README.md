@@ -20,13 +20,49 @@ py -m venv myvenv
 myvenv\Scripts\activate.bat
 ```
 
-## Run the Website
+### 3. pip install
+```bash
+pip install django psycopg2 python-decouple djangorestframework django-cors-headers djangorestframework-simplejwt Pillow
+```
+
+### 4. เข้า folder frontend โดยเปิด cmd อีกตัวขึ้นมา
+```bash
+cd frontend
+npm install axios react-router-dom
+npm install -D tailwindcss postcss autoprefixer
+npm install tailwindcss-animate class-variance-authority clsx tailwind-merge lucide-react
+```
+
+
+## สร้างไฟล์ .env
+```bash
+# database config
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+
+# email sender
+EMAIL_BACKEND = ''
+EMAIL_HOST = ''
+EMAIL_PORT = 
+EMAIL_USE_TLS = 
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+```
+
+## How to Run the Website
 
 ### 1. Run the Frontend ต้องอยู่ใน Folder frontend
 ```bash
+cd frontend
 npm start
 ```
+
 ### 2. Run the Backend ต้องอยู่ใน Folder backend
 ```bash
+cd backend
+py -m venv myvenv
 python manage.py runserver
 ```

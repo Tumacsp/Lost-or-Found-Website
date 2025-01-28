@@ -20,7 +20,7 @@ const VerifyTokenPage = () => {
     setError('');
 
     try {
-      await axiosInstance.post('http://localhost:8000/auth/verify-token/', { token });
+      await axiosInstance.post('auth/verify-token/', { token });
       navigate(`/reset-password/${token}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid or expired verification code');

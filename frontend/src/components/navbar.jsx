@@ -21,7 +21,6 @@ const Navbar = () => {
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
-      console.error("Logout error:", error);
       if (error.response?.status === 401 || error.response?.status === 403) {
         localStorage.removeItem("token");
         delete axiosInstance.defaults.headers.common["Authorization"];
