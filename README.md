@@ -20,9 +20,9 @@ py -m venv myvenv
 myvenv\Scripts\activate.bat
 ```
 
-### 3. pip install
+### 3. pip install requirements.txt
 ```bash
-pip install django psycopg2 python-decouple djangorestframework django-cors-headers djangorestframework-simplejwt Pillow
+pip install -r requirements.txt
 ```
 
 ### 4. เข้า folder frontend โดยเปิด cmd อีกตัวขึ้นมา
