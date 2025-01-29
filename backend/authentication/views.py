@@ -32,7 +32,6 @@ def register(request):
                 'error': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
         
-    print("Registration Errors:", serializer.errors)
     return Response({
         'errors': serializer.errors,
         'message': 'Invalid registration data'
