@@ -34,7 +34,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Left side: Logo and navigation */}
           <div className="flex items-center space-x-4">
@@ -74,7 +74,6 @@ const Navbar = () => {
               </Link>
             </div>
           </div>
-
           {/* Right side: Profile and Auth buttons */}
           <div className="hidden md:flex md:items-center md:space-x-4">
             {isLoggedIn ? (
