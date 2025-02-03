@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import Navbar from '../../components/navbar';
 import Footer from '../../components/footer';
+import MapComponent from "../../components/map_api";
+
 const ReportPage = () => {
     const [file, setFile] = useState();
     const [title, setTitle] = useState('');
     const [type, setType] = useState('');
     const [details, setDetails] = useState('');
     const imageInfo = {fileName:"", path:""}
+    const [location, setLocation] = useState({ lat: 13.764953, lon: 100.538316 });
+  
     function handleImageChange(e) {
         // console.log(e.target.files);
         try {
@@ -72,9 +76,18 @@ const ReportPage = () => {
                 </label>
               </div>
             
-            <h2>Location:</h2>
-            <input className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-             placeholder='Placeholder for layout'></input>
+            <h2 className="text-lg font-semibold mt-6">📌 Location:</h2>
+              <div className="mb-6 space-y-3">
+                <div className="overflow-hidden rounded-xl shadow-md border border-gray-200">
+                  <MapComponent onLocationChange={setLocation} />
+                </div>
+                <p className="text-sm text-gray-700 bg-gray-100 px-4 py-2 rounded-md">
+                  ✅ Selected location:{" "}
+                  <span className="font-medium">
+                    {location.lat.toFixed(6)}, {location.lon.toFixed(6)}
+                  </span>
+                </p>
+              </div>
 
             <h2>Post Details:</h2>
             <textarea className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500' 
