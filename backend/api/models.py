@@ -14,6 +14,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+def upload_path(instance, filename):
+    return '/'.join(['thumbnail', filename, instance.user])
+
 class Post(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
@@ -23,7 +26,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=100)
     body_text = models.TextField()
-    picture_name = models.ImageField(upload_to='posts/', blank=True, null=True)
+    picture_name = models.ImageField(upload_to=upload_path, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     location = models.OneToOneField(Location, on_delete=models.PROTECT)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)

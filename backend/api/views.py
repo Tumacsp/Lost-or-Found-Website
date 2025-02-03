@@ -37,4 +37,5 @@ class ProfileView(APIView):
                 detail={"non_field_errors": ["Failed to update profile"]},
                 code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        
+
+
