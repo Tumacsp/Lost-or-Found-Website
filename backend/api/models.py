@@ -20,7 +20,7 @@ class Location(models.Model):
         return f"({self.latitude}, {self.longitude})"
 
 def upload_path(instance, filename):
-    return '/'.join(['thumbnail', filename, instance.user])
+    return '/'.join(['thumbnail', filename, str(instance.user.username)])
 
 class Post(models.Model):
     STATUS_CHOICES = [
