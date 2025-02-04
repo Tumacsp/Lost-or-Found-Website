@@ -43,7 +43,10 @@ const MapComponent = ({ onLocationChange }) => {
         map.removeLayer(markerRef.current);
       }
 
-      const newMarker = L.marker([lat, lng], { draggable: true }).addTo(map);
+      const newMarker = L.marker([lat, lng], {
+        icon: customIcon,
+        draggable: true,
+      }).addTo(map);
       newMarker.on("dragend", (event) => {
         const position = event.target.getLatLng();
         onLocationChange({ lat: position.lat, lon: position.lng });
@@ -52,7 +55,7 @@ const MapComponent = ({ onLocationChange }) => {
       markerRef.current = newMarker;
       onLocationChange({ lat, lon: lng });
     });
-  }, [onLocationChange]); // ✅ ไม่ใส่ mapRef.current ใน dependency list
+  }, [onLocationChange]);
 
   return (
     <div className="w-full space-y-4">
