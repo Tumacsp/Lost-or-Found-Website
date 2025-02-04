@@ -3,7 +3,11 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 def profile_upload_path(instance, filename):
-    return f'/profile_pictures/{instance.user.id}/{filename}'
+    # แยกนามสกุลไฟล์ออกมา
+    ext = filename.split('.')[-1]
+    # สร้างชื่อไฟล์ใหม่ในรูปแบบ username-originalfilename.extension
+    new_filename = f"{instance.user.username}-{filename}"
+    return f'/profile_pictures/{new_filename}'
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -13,14 +17,18 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 
 class Location(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
     def __str__(self):
         return f"({self.latitude}, {self.longitude})"
 
 def upload_path(instance, filename):
-    return '/'.join(['thumbnail', filename, str(instance.user.username)])
+    # แยกนามสกุลไฟล์ออกมา
+    ext = filename.split('.')[-1]
+    # สร้างชื่อไฟล์ใหม่ในรูปแบบ username-originalfilename.extension
+    new_filename = f"{instance.user.username}-{filename}"
+    return f'thumbnail/{new_filename}'
 
 class Post(models.Model):
     STATUS_CHOICES = [
