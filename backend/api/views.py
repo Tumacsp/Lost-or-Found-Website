@@ -91,12 +91,10 @@ class ProfileChangePassword(APIView):
 
             # Delete old token and create new one
             Token.objects.filter(user=user).delete()
-            new_token = Token.objects.create(user=user)
 
             return Response({
-                "message": "Password changed successfully",
-                "token": new_token.key
-            }, status=status.HTTP_200_OK)
+            "message": "Password changed successfully. Please login again."
+        }, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response(

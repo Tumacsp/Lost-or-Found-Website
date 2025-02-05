@@ -7,6 +7,7 @@ import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 
 const Profile = () => {
+  // profile
   const [profile, setProfile] = useState({
     username: "",
     email: "",
@@ -14,18 +15,27 @@ const Profile = () => {
     last_name: "",
     profile_picture: null,
   });
+
+  const navigate = useNavigate();
+
+  // status
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [previewImage, setPreviewImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+
+  // alert
+  const [error, setError] = useState("");
+  const [profileSuccessMessage, setProfileSuccessMessage] = useState("");
+  const [passwordSuccessMessage, setPasswordSuccessMessage] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  // password
   const [passwords, setPasswords] = useState({
     old_password: "",
     new_password: "",
     confirm_password: "",
   });
-  const [passwordError, setPasswordError] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfile();
@@ -63,7 +73,7 @@ const Profile = () => {
       });
       setIsEditing(false);
       setError("");
-      setSuccessMessage("Profile updated successfully!");
+      setProfileSuccessMessage("Profile updated successfully!");
       fetchProfile();
     } catch (err) {
       handleError(err, setError, navigate);
@@ -94,35 +104,40 @@ const Profile = () => {
       setPasswordError("New passwords do not match");
       return;
     }
+
+    setIsLoading(true);
+
     try {
-      const response = await axiosInstance.post(
-        "api/profile/change-password/",
-        {
-          old_password: passwords.old_password,
-          new_password: passwords.new_password,
-        }
+      await axiosInstance.post("api/profile/change-password/", {
+        old_password: passwords.old_password,
+        new_password: passwords.new_password,
+      });
+
+      // แสดง success message แต่ยังไม่ปิด modal ทันที
+      setPasswordError("");
+      setPasswordSuccessMessage(
+        "Password changed successfully! Please login again."
       );
 
-      // Update token if provided
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        // Update axios instance authorization header
-        axiosInstance.defaults.headers.common[
-          "Authorization"
-        ] = `Token ${response.data.token}`;
-      }
+      // รอ 1.5 วินาทีก่อนจะทำการ logout และ redirect
+      setTimeout(() => {
+        setPasswords({
+          old_password: "",
+          new_password: "",
+          confirm_password: "",
+        });
+        setIsModalOpen(false);
+        localStorage.removeItem("token");
+        delete axiosInstance.defaults.headers.common["Authorization"];
 
-      setSuccessMessage("Password changed successfully!");
-      setPasswords({
-        old_password: "",
-        new_password: "",
-        confirm_password: "",
-      });
-      setIsModalOpen(false);
+        navigate("/login", { replace: true });
+        window.location.reload();
+      }, 1500);
     } catch (err) {
       setPasswordError(
         err.response?.data?.message || "Failed to change password"
       );
+      setIsLoading(false);
     }
   };
 
@@ -158,9 +173,10 @@ const Profile = () => {
               </button>
             </div>
 
-            {successMessage && (
+            {profileSuccessMessage && (
               <div className="alert alert-success bg-green-100 text-green-700 p-4 mb-4 rounded-lg">
-                <strong className="font-bold">Success!</strong> {successMessage}
+                <strong className="font-bold">Success!</strong>{" "}
+                {profileSuccessMessage}
               </div>
             )}
 
@@ -315,6 +331,19 @@ const Profile = () => {
 
             <h2 className="text-2xl font-bold mb-6">Change Password</h2>
 
+            {passwordSuccessMessage && (
+              <div className="alert alert-success bg-green-100 text-green-700 p-4 mb-4 rounded-lg">
+                <strong className="font-bold">Success!</strong>{" "}
+                {passwordSuccessMessage}
+              </div>
+            )}
+
+            {passwordError && (
+              <div className="alert alert-error bg-red-100 text-red-700 p-4 mb-4 rounded-lg">
+                <strong className="font-bold">Error!</strong> {passwordError}
+              </div>
+            )}
+
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -355,23 +384,28 @@ const Profile = () => {
                 />
               </div>
 
-              {passwordError && (
-                <p className="text-red-500 text-sm">{passwordError}</p>
-              )}
-
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                  disabled={isLoading}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
                 >
-                  Update Password
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Updating...
+                    </>
+                  ) : (
+                    "Update Password"
+                  )}
                 </button>
               </div>
             </form>
