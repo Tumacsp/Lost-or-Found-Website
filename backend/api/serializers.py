@@ -9,6 +9,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username']
         
 class UserProfileSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.SerializerMethodField()
+
     email = serializers.EmailField(
         validators=[UniqueValidator(
             queryset=User.objects.all(),
@@ -18,7 +20,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name']
+        fields = ['username', 'email', 'first_name', 'last_name', 'profile_picture']
         read_only_fields = ['email']
         extra_kwargs = {
             'first_name': {'required': False},
@@ -28,15 +30,32 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         user = self.instance
         if User.objects.exclude(pk=user.pk).filter(username=value).exists():
-            raise serializers.ValidationError(
-                {"username": ["This username is already taken."]}
-            )
+            raise serializers.ValidationError("This username is already taken.")
         return value
+    
+    def get_profile_picture(self, obj):
+        if obj.profile.picture:
+            request = self.context.get('request')
+            picture_url = obj.profile.picture.url
+
+            if request:
+                return request.build_absolute_uri(picture_url)
+            return picture_url
+        
+        return None
 
     def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', None)
+        
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
+
+        if profile_data and 'picture' in profile_data:
+            profile = instance.profile
+            profile.picture = profile_data['picture']
+            profile.save()
+
         return instance
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -76,3 +95,4 @@ class PostSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return post
+    

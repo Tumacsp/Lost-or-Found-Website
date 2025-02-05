@@ -7,31 +7,51 @@ from .errors import CustomError
 from .serializers import UserProfileSerializer, PostSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
+from rest_framework.authtoken.models import Token
 from .models import *
 
 class ProfileView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def get(self, request):
         try:
-            serializer = UserProfileSerializer(request.user)
+            profile, created = Profile.objects.get_or_create(user=request.user)
+
+            print("🔍 User:", request.user.username)
+            print("📸 Profile picture:", profile.picture if profile.picture else "No picture")
+
+            # ใช้ serializer พร้อม context เพื่อให้ request ถูกส่งเข้าไป
+            serializer = UserProfileSerializer(request.user, context={'request': request})
             return Response(serializer.data)
         except Exception as e:
-            raise CustomError(
-                detail="Failed to fetch profile data",
-                code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            return Response(
+                {"detail": "Failed to fetch profile data", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
     def put(self, request):
         try:
+            profile, created = Profile.objects.get_or_create(user=request.user)
+    
             serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
 
             if serializer.is_valid():
+                # จัดการอัพโหลดรูปภาพ
+                if 'profile_picture' in request.FILES:
+                    #ลบรูปเก่า
+                    if profile.picture:
+                        profile.picture.delete()
+                    #อัพรูปใหม่
+                    profile.picture = request.FILES['profile_picture']
+                    profile.save()
+
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
         
-            # print("❌ Validation Errors:", serializer.errors)
+            print("❌ Validation Errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
@@ -40,6 +60,50 @@ class ProfileView(APIView):
                 detail={"non_field_errors": ["Failed to update profile"]},
                 code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class ProfileChangePassword(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """Handle password change"""
+        try:
+            user = request.user
+            old_password = request.data.get('old_password')
+            new_password = request.data.get('new_password')
+
+            if not old_password or not new_password:
+                return Response(
+                    {"message": "Both old and new password are required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Validate old password
+            if not user.check_password(old_password):
+                return Response(
+                    {"message": "Current password is incorrect"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Set new password
+            user.set_password(new_password)
+            user.save()
+
+            # Delete old token and create new one
+            Token.objects.filter(user=user).delete()
+            new_token = Token.objects.create(user=user)
+
+            return Response({
+                "message": "Password changed successfully",
+                "token": new_token.key
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"message": "Failed to change password"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 class PostCreateView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]

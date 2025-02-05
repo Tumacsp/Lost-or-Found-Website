@@ -7,7 +7,7 @@ def profile_upload_path(instance, filename):
     ext = filename.split('.')[-1]
     # สร้างชื่อไฟล์ใหม่ในรูปแบบ username-originalfilename.extension
     new_filename = f"{instance.user.username}-{filename}"
-    return f'/profile_pictures/{new_filename}'
+    return f'profile_pictures/{new_filename}'
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
