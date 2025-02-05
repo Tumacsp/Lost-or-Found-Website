@@ -41,11 +41,18 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    if (profileSuccessMessage) {
+      const timer = setTimeout(() => {
+        setProfileSuccessMessage("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [profileSuccessMessage]);
+
   const fetchProfile = async () => {
     try {
       const response = await axiosInstance.get("api/profile/");
-      console.log("Fetched Profile Data:", response.data);
-
       setProfile(response.data);
       setPreviewImage(response.data.profile_picture);
       setError("");
