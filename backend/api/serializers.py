@@ -96,3 +96,4 @@ class PostSerializer(serializers.ModelSerializer):
         )
         return post
     
+    

@@ -140,3 +140,8 @@ class PostCreateView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
+class PostView(APIView):
+    def get(self, request):
+       posts = Post.objects.filter(status='active')
+       serializer = PostSerializer(posts, many=True, context={'request': request})
+       return Response(serializer.data)
