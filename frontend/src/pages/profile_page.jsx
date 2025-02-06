@@ -15,7 +15,7 @@ const Profile = () => {
     last_name: "",
     profile_picture: null,
   });
-
+  const [originalProfile, setOriginalProfile] = useState(null);
   const navigate = useNavigate();
 
   // status
@@ -54,6 +54,7 @@ const Profile = () => {
     try {
       const response = await axiosInstance.get("api/profile/");
       setProfile(response.data);
+      setOriginalProfile(response.data);
       setPreviewImage(response.data.profile_picture);
       setError("");
     } catch (err) {
@@ -303,7 +304,8 @@ const Profile = () => {
                           type="button"
                           onClick={() => {
                             setIsEditing(false);
-                            setPreviewImage(profile.profile_picture);
+                            setProfile(originalProfile);
+                            setPreviewImage(originalProfile.profile_picture);
                           }}
                           className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 text-base font-semibold transition-colors duration-200"
                         >
