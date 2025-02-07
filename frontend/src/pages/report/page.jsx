@@ -3,6 +3,7 @@ import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import MapComponent from "../../components/map_api";
 import axiosInstance from "../../utils/axios";
+import { useNavigate } from "react-router-dom";
 
 const ReportPage = () => {
   const [file, setFile] = useState();
@@ -14,6 +15,7 @@ const ReportPage = () => {
   const [location, setLocation] = useState({ lat: 13.764953, lon: 100.538316 });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   function handleImageChange(e) {
     // console.log(e.target.files);
@@ -70,6 +72,7 @@ const ReportPage = () => {
 
       if (response.status === 201) {
         console.log("Report created successfully");
+        navigate("/")
       }
     } catch (error) {
       console.error("Error creating report:", error);
