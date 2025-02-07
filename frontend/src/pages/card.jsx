@@ -1467,14 +1467,13 @@ const Poster = () =>{
             <g className="cls-145">
                 <rect className="cls-69" width="595.28" height="841.89"/>
             </g>
-            <rect className="cls-78" x="72.64" y="171.13" width="450" height="320">
-            </rect>
+            <rect className="cls-78" x="72.64" y="171.13" width="450" height="320"/>
             
-            <img className="w-full h-full" src={data.picture_name}/>
+            <image className="" x="72.64" y="171.13" width="450" height="320" href={data.picture_name}/>
             <text className="cls-142" transform="translate(178.3 82.25)"><tspan x="0" y="0">Wanted</tspan></text>
             <line className="cls-144" x1="16.02" y1="153.87" x2="579.25" y2="153.87"/>
             {typeRender(data.category)}
-            <text className="cls-143 w-full" x="200" y="547.95" textAnchor="middle"><tspan>{data.title}</tspan></text>
+            <text className="cls-143 w-full" x="50%" y="65%" textAnchor="middle" dominantBaseline="middle"><tspan>{data.title}</tspan></text>
             </svg>
         </a>
     );
