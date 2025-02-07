@@ -1,6 +1,8 @@
 import React from 'react';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
+import Poster from "./card"
+
 const MainPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -22,6 +24,9 @@ const MainPage = () => {
               <p className="text-gray-600 mb-4">Browse items that have been found to see if yours is listed.</p>
               <a href="/search" className="text-blue-600 hover:underline inline-block">Search Now</a>
             </div>
+          </div>
+          <div>
+            <Poster />
           </div>
         </div>
       </main>
