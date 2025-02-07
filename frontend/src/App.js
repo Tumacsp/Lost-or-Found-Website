@@ -8,6 +8,7 @@ import VerifyTokenPage  from './pages/auth/verify_token_page';
 import ResetPasswordPage from './pages/auth/reset_password_page';
 import ProfilePage from './pages/profile_page';
 import ReportPage from './pages/report/page';
+import SearchPage from './pages/search/page';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/profile" element={<ProfilePage/>} />
         <Route path="/report" element={<ReportPage/>} />
+        <Route path="/search" element={<SearchPage/>} />
       </Routes>
     </Router>
   );
