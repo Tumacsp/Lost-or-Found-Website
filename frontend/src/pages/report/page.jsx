@@ -9,6 +9,7 @@ const ReportPage = () => {
   const [title, setTitle] = useState("");
   const [type, setType] = useState("object");
   const [details, setDetails] = useState("");
+  const [reward, setReward] = useState(0);
   const imageInfo = { fileName: "", path: "" };
   const [location, setLocation] = useState({ lat: 13.764953, lon: 100.538316 });
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +38,10 @@ const ReportPage = () => {
     // console.log(e.target.value)
     setDetails(e.target.value);
   }
+  function handleRewardChange(e) {
+    // console.log(e.target.value)
+    setReward(e.target.value);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,6 +55,7 @@ const ReportPage = () => {
       formData.append("details", details);
       formData.append("latitude", location.lat);
       formData.append("longitude", location.lon);
+      formData.append("reward", reward);
 
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput && fileInput.files[0]) {
@@ -171,6 +177,9 @@ const ReportPage = () => {
                 </label>
               </div>
 
+              <h2>Rewards:</h2>
+              <input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" type="number"
+              onChange={handleRewardChange}></input>
               <h2 className="text-lg font-semibold mt-6">📌 Location:</h2>
               <div className="mb-6 space-y-3">
                 <div className="overflow-hidden rounded-xl shadow-md border border-gray-200">
@@ -208,18 +217,22 @@ const ReportPage = () => {
 
             <div className="mt-5">
               <h1 className="text-center">(Post Preview)</h1>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif text-center mt-4">
+              <div>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif text-center mt-4">
                 Wanted
-              </h1>
-              <DisplayType type={type} />
-              <hr className="h-0.5 border-t-0 bg-neutral-500" />
-              <div className="flex items-center justify-center">
-                <img className="max-w-40" src={file} alt="Preview"/>
+                </h1>
+                <DisplayType type={type} />
+                <hr className="h-0.5 border-t-0 bg-neutral-500" />
+                <div className="flex items-center justify-center">
+                  <img className="max-w-40" src={file} alt="Preview"/>
+                </div>
+                <h1 className="text-md sm:text-xl lg:text-2xl text-center mb-4">
+                  {title}
+                </h1>
+                <h2 className="text-md sm:text-xl lg:text-2xl text-center mb-4">{reward} $</h2>
+                <p>{details}</p>
               </div>
-              <h1 className="text-md sm:text-xl lg:text-2xl text-center mb-4">
-                {title}
-              </h1>
-              <p>{details}</p>
+              
             </div>
           </div>
         </form>

@@ -49,6 +49,7 @@ class Post(models.Model):
     location = models.OneToOneField(Location, on_delete=models.PROTECT)
     category = models.CharField(max_length=20, choices=TYPE_CHOICES, default='object')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    reward = models.IntegerField(max_length=20, default=0)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

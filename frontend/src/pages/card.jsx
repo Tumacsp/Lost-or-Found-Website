@@ -1474,6 +1474,7 @@ const Poster = () =>{
             <line className="cls-144" x1="16.02" y1="153.87" x2="579.25" y2="153.87"/>
             {typeRender(data.category)}
             <text className="cls-143 w-full" x="50%" y="65%" textAnchor="middle" dominantBaseline="middle"><tspan>{data.title}</tspan></text>
+            <text className="cls-143 w-full" x="50%" y="75%" textAnchor="middle" dominantBaseline="middle"><tspan>{data?.reward ? `${Number(data.reward).toLocaleString()} $` : "N/A"}</tspan></text>
             </svg>
         </a>
     );

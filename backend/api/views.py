@@ -116,6 +116,7 @@ class PostCreateView(APIView):
                     'latitude': request.data.get('latitude'),
                     'longitude': request.data.get('longitude')
                 },
+                'reward': request.data.get('reward'),
                 'status': 'active'
             }
             
