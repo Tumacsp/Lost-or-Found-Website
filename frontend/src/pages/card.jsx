@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import '../App.css';
 import axiosInstance from "../utils/axios";
 import { handleError } from "../utils/errorHandler";
+import { Link } from 'react-router-dom';
 
 const Poster = () =>{
     const [error, setError] = useState("");
@@ -38,7 +39,7 @@ const Poster = () =>{
     )
     }
     const cards = postsData.map((data) =>
-        <a className="p-0 mx-2 my-5" href="#">
+        <Link to={`/postdetail/${data.id}`} className="p-0 mx-2 my-5" key={data.id}>
             <svg className="" id="Layer_1" data-name="Layer 1" width='238.112' height='336.756' viewBox="0 0 595.28 841.89">
             <defs>
                 <mask id="mask" x="0" y="0" width="595.28" height="841.89" maskUnits="userSpaceOnUse">
@@ -1476,7 +1477,7 @@ const Poster = () =>{
             <text className="cls-143 w-full" x="50%" y="65%" textAnchor="middle" dominantBaseline="middle"><tspan>{data.title}</tspan></text>
             <text className="cls-143 w-full" x="50%" y="75%" textAnchor="middle" dominantBaseline="middle"><tspan>{data?.reward ? `${Number(data.reward).toLocaleString()} $` : "N/A"}</tspan></text>
             </svg>
-        </a>
+        </Link>
     );
     return (
         <div className='flex flex-wrap'>

@@ -9,6 +9,7 @@ import ResetPasswordPage from './pages/auth/reset_password_page';
 import ProfilePage from './pages/profile_page';
 import ReportPage from './pages/report/page';
 import SearchPage from './pages/search/page';
+import PostDetailPage from './pages/postdetail_page';
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/profile" element={<ProfilePage/>} />
         <Route path="/report" element={<ReportPage/>} />
         <Route path="/search" element={<SearchPage/>} />
+        <Route path="/postdetail/:id" element={<PostDetailPage />} />
       </Routes>
     </Router>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
-import MapComponent from "../../components/map_api";
+import MapComponent from "../../components/map/map_api";
 import axiosInstance from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -227,7 +227,7 @@ const ReportPage = () => {
                 <DisplayType type={type} />
                 <hr className="h-0.5 border-t-0 bg-neutral-500" />
                 <div className="flex items-center justify-center">
-                  <img className="max-w-40" src={file} alt="Preview"/>
+                  <img className="max-w-40 max-h-60 object-contain mt-2" src={file} alt="Preview"/>
                 </div>
                 <h1 className="text-md sm:text-xl lg:text-2xl text-center mb-4">
                   {title}

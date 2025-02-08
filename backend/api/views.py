@@ -142,7 +142,12 @@ class PostCreateView(APIView):
             )
             
 class PostView(APIView):
-    def get(self, request):
-       posts = Post.objects.filter(status='active')
-       serializer = PostSerializer(posts, many=True, context={'request': request})
-       return Response(serializer.data)
+    def get(self, request, pk=None):
+        if pk is None:
+            posts = Post.objects.filter(status='active')
+            serializer = PostSerializer(posts, many=True, context={'request': request})
+            return Response(serializer.data)
+        else:
+            post = get_object_or_404(Post, pk=pk)
+            serializer = PostSerializer(post, context={'request': request})
+            return Response(serializer.data)
