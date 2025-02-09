@@ -175,6 +175,7 @@ const ReportPage = () => {
                     id="dropzone-file"
                     type="file"
                     className="hidden"
+                    accept="image/*"
                     onChange={handleImageChange}
                   />
                 </label>
@@ -183,6 +184,7 @@ const ReportPage = () => {
               <h2>Rewards:</h2>
               <input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" type="number"
               onChange={handleRewardChange}></input>
+
               <h2 className="text-lg font-semibold mt-6">📌 Location:</h2>
               <div className="mb-6 space-y-3">
                 <div className="overflow-hidden rounded-xl shadow-md border border-gray-200">

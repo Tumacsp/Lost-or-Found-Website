@@ -12,7 +12,7 @@ const Map = ({ latitude, longitude, addressDetail }) => {
         // สร้างแผนที่
         const map = new window.longdo.Map({
           placeholder: mapRef.current,
-          zoom: 15,
+          zoom: 10,
           location: { lon: longitude, lat: latitude },
           lastView: false, // ไม่ใช้มุมมองล่าสุด
           center: { lon: longitude, lat: latitude }, // กำหนดจุดกึ่งกลาง
@@ -32,7 +32,7 @@ const Map = ({ latitude, longitude, addressDetail }) => {
 
         // จัดกึ่งกลางแผนที่
         map.location({ lon: longitude, lat: latitude }, true);
-        map.zoom(15, true);
+        map.zoom(10, true);
       };
       document.body.appendChild(script);
 

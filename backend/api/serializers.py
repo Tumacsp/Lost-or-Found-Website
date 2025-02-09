@@ -96,4 +96,19 @@ class PostSerializer(serializers.ModelSerializer):
         )
         return post
     
-    
+    def update(self, instance, validated_data):
+        # อัพเดตข้อมูล location ถ้ามีการส่งมา
+        if 'location' in validated_data:
+            location_data = validated_data.pop('location')
+            # อัพเดตข้อมูล location ที่มีอยู่แล้ว
+            location = instance.location
+            location.latitude = location_data.get('latitude', location.latitude)
+            location.longitude = location_data.get('longitude', location.longitude)
+            location.save()
+
+        # อัพเดตข้อมูลอื่นๆ ของ post
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance

@@ -1,9 +1,12 @@
 import React, { useEffect, useRef } from "react";
 
-const MapComponent = ({ onLocationChange }) => {
+const MapDragLaLongComponent = ({ onLocationChange, initialLocation }) => {
   const markerRef = useRef(null);
+  const mapRef = useRef(null);
 
   useEffect(() => {
+    if (mapRef.current) return; // Prevent reloading if map already exists
+
     const loadScript = () => {
       const script = document.createElement("script");
       script.src = `https://api.longdo.com/map/?key=${process.env.REACT_APP_LONGDO_MAP_KEY}`;
@@ -12,13 +15,20 @@ const MapComponent = ({ onLocationChange }) => {
       script.onload = () => {
         const map = new window.longdo.Map({
           placeholder: document.getElementById("map"),
-          zoom: 12,
-          location: { lon: 100.538316, lat: 13.764953 },
+          zoom: 10,
+          location: { lon: initialLocation.lon, lat: initialLocation.lat },
+          lastView: false,
+          center: { lon: initialLocation.lon, lat: initialLocation.lat },
         });
-        map.location({ lon: 100.538316, lat: 13.764953 }, true);
+
+        map.location({ lon: initialLocation.lon, lat: initialLocation.lat }, true);
+        mapRef.current = map;
 
         const marker = new window.longdo.Marker(
-          { lon: 100.538316, lat: 13.764953 },
+          {
+            lon: initialLocation.lon,
+            lat: initialLocation.lat,
+          },
           {
             title: "ตำแหน่งที่เลือก",
             draggable: true,
@@ -87,14 +97,25 @@ const MapComponent = ({ onLocationChange }) => {
       if (script) {
         document.head.removeChild(script);
       }
+      mapRef.current = null;
     };
-  }, [onLocationChange]);
+  }, []); // Remove initialLocation from dependencies
+
+  // Update marker position when initialLocation changes
+  useEffect(() => {
+    if (mapRef.current && markerRef.current) {
+      markerRef.current.location({
+        lon: initialLocation.lon,
+        lat: initialLocation.lat,
+      });
+    }
+  }, [initialLocation]);
 
   return (
     <div className="w-full space-y-4">
       <div
         id="map"
-        className="h-64 w-full rounded-xl shadow-md border border-gray-200"
+        className="h-96 w-full rounded-xl shadow-md border border-gray-200"
       />
       <p className="text-sm text-gray-700 px-4 py-2 bg-gray-100 rounded-md">
         📍 Drag the marker on the map to select location
@@ -103,4 +124,11 @@ const MapComponent = ({ onLocationChange }) => {
   );
 };
 
-export default MapComponent;
+MapDragLaLongComponent.defaultProps = {
+  initialLocation: {
+    lat: 13.764953,
+    lon: 100.538316,
+  },
+};
+
+export default MapDragLaLongComponent;

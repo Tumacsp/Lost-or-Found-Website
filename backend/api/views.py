@@ -140,6 +140,76 @@ class PostCreateView(APIView):
                 {'error': f'An error occurred: {str(e)}'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+    
+    def put(self, request, post_id, *args, **kwargs):
+        try:
+            print("Request Data:", request.data)  # ตรวจสอบค่าที่ส่งมาใน request
+            print("Request Files:", request.FILES)  # ดูว่ามีไฟล์อัปโหลดมาหรือไม่
+
+            post = get_object_or_404(Post, id=post_id)
+            
+            if post.user != request.user:
+                return Response(
+                    {'error': 'You do not have permission to edit this post'}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            data = {
+                'title': request.data.get('title'),
+                'body_text': request.data.get('body_text'),
+                'category': request.data.get('category'),
+                'reward': request.data.get('reward'),
+                'status': request.data.get('status'),
+                'location': {
+                    'latitude': request.data.get('latitude'),
+                    'longitude': request.data.get('longitude')
+                }
+            }
+
+            # Handle image upload if present
+            if 'picture_name' in request.FILES:
+                data['picture_name'] = request.FILES['picture_name']
+
+            serializer = PostSerializer(post, data=data, partial=True, context={'request': request})
+            
+            if serializer.is_valid():
+                post = serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            
+            print("Serializer errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print("Error updating post:", str(e))
+            return Response(
+                {'error': f'An error occurred: {str(e)}'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+    def delete(self, request, post_id, *args, **kwargs):
+        try:
+            # หา post ที่ต้องการลบ
+            post = get_object_or_404(Post, id=post_id)
+            
+            # ตรวจสอบว่าผู้ใช้เป็นเจ้าของ post
+            if post.user != request.user:
+                return Response(
+                    {'error': 'You do not have permission to delete this post'}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            post.delete()
+            return Response(
+                {'message': 'Post deleted successfully'}, 
+                status=status.HTTP_204_NO_CONTENT
+            )
+
+        except Exception as e:
+            print("Error deleting post:", str(e))
+            return Response(
+                {'error': f'An error occurred: {str(e)}'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
             
 class PostView(APIView):
     def get(self, request, pk=None):

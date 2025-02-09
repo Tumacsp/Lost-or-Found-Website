@@ -6,11 +6,17 @@ import Footer from "../components/footer";
 import axiosInstance from "../utils/axios";
 import { handleError } from "../utils/errorHandler";
 import Map from "../components/map/map_show";
+import MapDragLaLongComponent from "../components/map/map_drag";
 
 const PostDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [postData, setPostData] = useState(null);
+
+  const [location, setLocation] = useState({
+    lat: postData?.location?.latitude || 13.764953,
+    lon: postData?.location?.longitude || 100.538316,
+  });
 
   const [error, setError] = useState("");
   const [addressDetail, setAddressDetail] = useState({
@@ -24,6 +30,9 @@ const PostDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
+
   // สมมติว่าเรามี currentUser จาก context หรือ localStorage
   const currentUser = JSON.parse(localStorage.getItem("user"));
 
@@ -32,6 +41,10 @@ const PostDetailPage = () => {
     body_text: "",
     category: "",
     reward: 0,
+    location: {
+      latitude: 13.764953,
+      longitude: 100.538316,
+    },
   });
 
   const fetchPostDetail = async () => {
@@ -104,9 +117,13 @@ const PostDetailPage = () => {
         category: postData.category,
         status: postData.status,
         reward: postData.reward,
+        location: {
+          latitude: location.lat,
+          longitude: location.lon,
+        },
       });
     }
-  }, [postData]);
+  }, [location, postData]);
 
   useEffect(() => {
     if (postData?.location) {
@@ -117,10 +134,41 @@ const PostDetailPage = () => {
     }
   }, [postData]);
 
+  useEffect(() => {
+    return () => {
+      if (previewURL) {
+        URL.revokeObjectURL(previewURL);
+      }
+    };
+  }, [previewURL]);
+
   const handleEdit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.put(`api/posts/${id}`, editForm);
+      // สร้าง FormData เพื่อส่งไฟล์
+      const formData = new FormData();
+      formData.append("title", editForm.title);
+      formData.append("body_text", editForm.body_text);
+      formData.append("category", editForm.category);
+      formData.append("reward", editForm.reward);
+      formData.append("status", editForm.status);
+      formData.append("latitude", editForm.location.latitude);
+      formData.append("longitude", editForm.location.longitude);
+
+      formData.forEach((value, key) => {
+        console.log(key, value);
+      });      
+
+      // เพิ่มรูปภาพถ้ามีการเลือก
+      if (selectedImage) {
+        formData.append("picture_name", selectedImage);
+      }
+
+      await axiosInstance.put(`api/posts/edit/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       fetchPostDetail();
       setShowEditModal(false);
     } catch (err) {
@@ -130,10 +178,19 @@ const PostDetailPage = () => {
 
   const handleDelete = async () => {
     try {
-      await axiosInstance.delete(`api/posts/${id}`);
+      await axiosInstance.delete(`api/posts/delete/${id}`);
       navigate("/");
     } catch (err) {
       handleError(err, setError, navigate);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      const fileURL = URL.createObjectURL(file);
+      setPreviewURL(fileURL);
     }
   };
 
@@ -429,7 +486,7 @@ const PostDetailPage = () => {
       {/* Edit Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all">
+          <div className="bg-white rounded-xl p-8 w-full max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all max-w-5xl">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-gray-900">Edit Post</h3>
               <button
@@ -440,86 +497,177 @@ const PostDetailPage = () => {
               </button>
             </div>
 
-            <form onSubmit={handleEdit} className="space-y-6">
-              <div>
-                <label className="text-sm font-semibold text-gray-700 block mb-2">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  value={editForm.title}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, title: e.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition duration-200"
-                  placeholder="Enter title"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-700 block mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={editForm.body_text}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, body_text: e.target.value })
-                  }
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition duration-200"
-                  placeholder="Enter description"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-semibold text-gray-700 block mb-2">
-                    Category
-                  </label>
-                  <select
-                    value={editForm.category}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, category: e.target.value })
-                    }
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition duration-200"
-                  >
-                    <option value="object">Object</option>
-                    <option value="living">Living</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-semibold text-gray-700 block mb-2">
-                    Prize ($)
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.reward}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, reward: e.target.value })
-                    }
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition duration-200"
-                    placeholder="Enter prize amount"
-                  />
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Left Section - Form */}
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold mb-4">📌 Location</h2>
+                <div className="space-y-3">
+                  <div className="overflow-hidden rounded-xl shadow-md border border-gray-200">
+                    <MapDragLaLongComponent
+                      onLocationChange={setLocation}
+                      initialLocation={{
+                        lat: postData?.location?.latitude || 13.764953,
+                        lon: postData?.location?.longitude || 100.538316,
+                      }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-700 bg-gray-100 px-4 py-2 rounded-md">
+                    ✅ Selected location:{" "}
+                    <span className="font-medium">
+                      {postData?.location?.latitude}, {postData?.location?.longitude}
+                    </span>
+                  </p>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t">
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="px-6 py-2.5 text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition duration-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-200 transition duration-200"
-                >
-                  Save Changes
-                </button>
+              {/* Right Section - Map */}
+              <div className="flex-1">
+                <form onSubmit={handleEdit} className="space-y-6">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.title}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, title: e.target.value })
+                      }
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition duration-200"
+                      placeholder="Enter title"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={editForm.body_text}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, body_text: e.target.value })
+                      }
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition duration-200"
+                      placeholder="Enter description"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700 block mb-2">
+                        Category
+                      </label>
+                      <select
+                        value={editForm.category}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, category: e.target.value })
+                        }
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition duration-200"
+                      >
+                        <option value="object">Object</option>
+                        <option value="living">Living</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700 block mb-2">
+                        Prize ($)
+                      </label>
+                      <input
+                        type="number"
+                        value={editForm.reward}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, reward: e.target.value })
+                        }
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition duration-200"
+                        placeholder="Enter prize amount"
+                      />
+                    </div>
+                  </div>
+
+                  {/* เพิ่มในส่วนของ form */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Image
+                    </label>
+                    <div className="space-y-4">
+                      {/* แสดงรูปภาพปัจจุบัน */}
+                      {postData.picture_name && (
+                        <div className="w-full h-48 relative">
+                          <img
+                            src={previewURL || postData.picture_name}
+                            alt="Current"
+                            className="w-full h-full object-contain rounded-lg"
+                          />
+                        </div>
+                      )}
+
+                      {/* Input สำหรับอัพโหลดรูปใหม่ */}
+                      <div className="flex items-center justify-center w-full">
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg
+                              className="w-8 h-8 mb-4 text-gray-500"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 20 16"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                              />
+                            </svg>
+                            <p className="mb-2 text-sm text-gray-500">
+                              <span className="font-semibold">
+                                Click to upload
+                              </span>{" "}
+                              or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              SVG, PNG, JPG or GIF (MAX. 800x400px)
+                            </p>
+                          </div>
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                          />
+                        </label>
+                      </div>
+
+                      {/* แสดงชื่อไฟล์ที่เลือก */}
+                      {selectedImage && (
+                        <p className="text-sm text-gray-600">
+                          Selected file: {selectedImage.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-6 border-t">
+                    <button
+                      type="button"
+                      onClick={() => setShowEditModal(false)}
+                      className="px-6 py-2.5 text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition duration-200"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-200 transition duration-200"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
