@@ -151,3 +151,14 @@ class PostView(APIView):
             post = get_object_or_404(Post, pk=pk)
             serializer = PostSerializer(post, context={'request': request})
             return Response(serializer.data)
+
+class Search(APIView):
+    def get(self, request, terms=None):
+        if terms is None:
+            posts = Post.objects.filter(status='active')
+            serializer = PostSerializer(posts, many=True, context={'request': request})
+            return Response(serializer.data)
+        else:
+            posts = Post.objects.filter(title__icontains=terms) | Post.objects.filter(body_text__icontains=terms)
+            serializer = PostSerializer(posts, many=True, context={'request': request})
+            return Response(serializer.data)
