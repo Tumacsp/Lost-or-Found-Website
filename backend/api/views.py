@@ -168,6 +168,9 @@ class PostCreateView(APIView):
 
             # Handle image upload if present
             if 'picture_name' in request.FILES:
+                # ลบรูปเก่าถ้ามี
+                if post.picture_name:
+                    post.picture_name.delete()
                 data['picture_name'] = request.FILES['picture_name']
 
             serializer = PostSerializer(post, data=data, partial=True, context={'request': request})
@@ -197,7 +200,10 @@ class PostCreateView(APIView):
                     {'error': 'You do not have permission to delete this post'}, 
                     status=status.HTTP_403_FORBIDDEN
                 )
-
+            
+            # ลบรูป
+            if post.picture_name:
+                post.picture_name.delete()
             post.delete()
             return Response(
                 {'message': 'Post deleted successfully'}, 

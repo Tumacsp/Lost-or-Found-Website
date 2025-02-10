@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Edit, Trash2, AlertCircle, X } from "lucide-react";
+import { Edit, Trash2, AlertCircle, CheckCircle2, X } from "lucide-react";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import axiosInstance from "../utils/axios";
 import { handleError } from "../utils/errorHandler";
 import Map from "../components/map/map_show";
 import MapDragLaLongComponent from "../components/map/map_drag";
+import AlertModal from "../components/ui/alert";
 
 const PostDetailPage = () => {
   const { id } = useParams();
@@ -18,6 +19,12 @@ const PostDetailPage = () => {
     lon: postData?.location?.longitude || 100.538316,
   });
 
+  const [alertModal, setAlertModal] = useState({
+    isOpen: false,
+    type: "success",
+    message: "",
+  });
+
   const [error, setError] = useState("");
   const [addressDetail, setAddressDetail] = useState({
     province: "",
@@ -26,6 +33,8 @@ const PostDetailPage = () => {
     road: "",
     postcode: "",
   });
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -157,7 +166,7 @@ const PostDetailPage = () => {
 
       formData.forEach((value, key) => {
         console.log(key, value);
-      });      
+      });
 
       // เพิ่มรูปภาพถ้ามีการเลือก
       if (selectedImage) {
@@ -171,17 +180,42 @@ const PostDetailPage = () => {
       });
       fetchPostDetail();
       setShowEditModal(false);
+      setSuccessMessage("Post updated successfully!");
+      setErrorMessage("");
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 5000);
     } catch (err) {
       handleError(err, setError, navigate);
+      setErrorMessage("Failed to update post. Please try again.");
+      setSuccessMessage("");
     }
   };
 
   const handleDelete = async () => {
     try {
       await axiosInstance.delete(`api/posts/delete/${id}`);
-      navigate("/");
+      setShowDeleteModal(false); // ปิด delete confirmation modal
+
+      setAlertModal({
+        isOpen: true,
+        type: "success",
+        message: "The post has been successfully deleted.",
+      });
+
+      setTimeout(() => {
+        setAlertModal({ ...alertModal, isOpen: false });
+        navigate("/");
+      }, 1500);
     } catch (err) {
       handleError(err, setError, navigate);
+      setShowDeleteModal(false);
+
+      setAlertModal({
+        isOpen: true,
+        type: "error",
+        message: "Failed to delete post. Please try again.",
+      });
     }
   };
 
@@ -230,6 +264,20 @@ const PostDetailPage = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        {successMessage && (
+          <div className="bg-green-100 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 flex items-center">
+            <CheckCircle2 className="h-5 w-5 mr-2" />
+            <span className="font-medium">{successMessage}</span>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center">
+            <AlertCircle className="h-5 w-5 mr-2" />
+            <span className="font-medium">{errorMessage}</span>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
           {/* Left side - Card Preview */}
           <div className="w-full lg:w-1/2">
@@ -498,7 +546,6 @@ const PostDetailPage = () => {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8">
-              {/* Left Section - Form */}
               <div className="flex-1">
                 <h2 className="text-lg font-semibold mb-4">📌 Location</h2>
                 <div className="space-y-3">
@@ -514,13 +561,13 @@ const PostDetailPage = () => {
                   <p className="text-sm text-gray-700 bg-gray-100 px-4 py-2 rounded-md">
                     ✅ Selected location:{" "}
                     <span className="font-medium">
-                      {postData?.location?.latitude}, {postData?.location?.longitude}
+                      {postData?.location?.latitude},{" "}
+                      {postData?.location?.longitude}
                     </span>
                   </p>
                 </div>
               </div>
 
-              {/* Right Section - Map */}
               <div className="flex-1">
                 <form onSubmit={handleEdit} className="space-y-6">
                   <div>
@@ -586,13 +633,11 @@ const PostDetailPage = () => {
                     </div>
                   </div>
 
-                  {/* เพิ่มในส่วนของ form */}
                   <div>
                     <label className="text-sm font-semibold text-gray-700 block mb-2">
                       Image
                     </label>
                     <div className="space-y-4">
-                      {/* แสดงรูปภาพปัจจุบัน */}
                       {postData.picture_name && (
                         <div className="w-full h-48 relative">
                           <img
@@ -603,7 +648,6 @@ const PostDetailPage = () => {
                         </div>
                       )}
 
-                      {/* Input สำหรับอัพโหลดรูปใหม่ */}
                       <div className="flex items-center justify-center w-full">
                         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                           <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -641,7 +685,6 @@ const PostDetailPage = () => {
                         </label>
                       </div>
 
-                      {/* แสดงชื่อไฟล์ที่เลือก */}
                       {selectedImage && (
                         <p className="text-sm text-gray-600">
                           Selected file: {selectedImage.name}
@@ -671,6 +714,13 @@ const PostDetailPage = () => {
           </div>
         </div>
       )}
+
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        type={alertModal.type}
+        message={alertModal.message}
+        onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+      />
     </div>
   );
 };

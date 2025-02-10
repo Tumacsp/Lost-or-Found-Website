@@ -112,3 +112,4 @@ class PostSerializer(serializers.ModelSerializer):
         
         instance.save()
         return instance
+    
