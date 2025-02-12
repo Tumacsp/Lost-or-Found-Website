@@ -5,7 +5,6 @@ import axiosInstance from "../../utils/axios";
 import { handleError } from "../../utils/errorHandler";
 import { useNavigate } from "react-router-dom";
 import { makeCard } from "../card";
-import { Link } from 'react-router-dom';
 
 const SearchPage = () => {
     const [error, setError] = useState("");

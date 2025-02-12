@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProfileView, PostCreateView, ProfileChangePassword, PostView, Search, PostFoundView
+from .views import ProfileView, PostCreateView, ProfileChangePassword, PostView, Search, PostFoundView, BookmarkView
 
 urlpatterns = [
     #profile
@@ -16,5 +16,9 @@ urlpatterns = [
 
     #search post
     path('search/<str:terms>', Search.as_view(), name='get-post-by-title'),
-    path('search/', Search.as_view(), name='get-post-by-title')
+    path('search/', Search.as_view(), name='get-post-by-title'),
+
+    #bookmark
+    path('bookmark/<int:post_id>', BookmarkView.as_view(), name=''),
+    path('bookmark/', BookmarkView.as_view(), name='')
 ]

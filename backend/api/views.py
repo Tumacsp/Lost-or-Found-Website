@@ -4,10 +4,10 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from .errors import CustomError
-from .serializers import UserProfileSerializer, PostSerializer
+from .serializers import UserProfileSerializer, PostSerializer, BookmarkSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.authtoken.models import Token
 from .models import *
 from django.db import transaction
@@ -236,7 +236,6 @@ class PostFoundView(APIView):
         try:
             with transaction.atomic():
                 post = get_object_or_404(Post, id=post_id)
-                
                 if post.user == request.user:
                     return Response(
                         {'error': 'You cannot mark your own post as found'},
@@ -287,3 +286,40 @@ class Search(APIView):
             posts = Post.objects.filter(title__icontains=terms) | Post.objects.filter(body_text__icontains=terms)
             serializer = PostSerializer(posts, many=True, context={'request': request})
             return Response(serializer.data)
+
+class BookmarkView(APIView):
+    def get(self, request, post_id=None):
+        """get an array of posts"""
+        if post_id is None:
+            user = request.user
+            bookmarks = Bookmark.objects.filter(user=user).select_related('post')
+            posts = [bookmark.post for bookmark in bookmarks]
+            serializer = PostSerializer(posts, many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            post = Post.objects.get(pk=post_id)
+            user = request.user
+            bookmark_exists = Bookmark.objects.filter(post=post, user=user).exists()
+            if bookmark_exists:
+                return Response({"bookmarked": True}, status=status.HTTP_200_OK)
+            else:
+                return Response({"bookmarked": False}, status=status.HTTP_200_OK)
+
+    def post(self, request, post_id):
+        """mark a post as bookmarked"""
+        post = Post.objects.get(pk=post_id)
+        user = request.user
+        bookmark, created = Bookmark.objects.get_or_create(post=post, user=user)
+        if created:
+            return Response({"message": "Bookmark added."}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Bookmark already exists."}, status=status.HTTP_200_OK)
+
+    def delete(self, request, post_id):
+        """unmarked a post as bookmarked"""
+        user = request.user
+        bookmark = Bookmark.objects.filter(post_id=post_id, user=user).first()
+
+        if bookmark:
+            bookmark.delete()
+            return Response({"message": "Bookmark removed."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Bookmark not found."}, status=status.HTTP_404_NOT_FOUND)

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
-from .models import Post, Location, Profile
+from .models import Post, Location, Profile, Bookmark
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,6 +67,11 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['picture']
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bookmark
+        fields = ['post', 'user']
 
 class PostSerializer(serializers.ModelSerializer):
     location = LocationSerializer()

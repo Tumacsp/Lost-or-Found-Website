@@ -17,7 +17,7 @@ const PostDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [postData, setPostData] = useState(null);
-
+  const [bookMark, setMarked] = useState(false);
   const [location, setLocation] = useState({
     lat: postData?.location?.latitude || 13.764953,
     lon: postData?.location?.longitude || 100.538316,
@@ -45,6 +45,15 @@ const PostDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    type: "success",
+    message: "",
+  });
+
+  const handleCloseAlert = () => {
+    setAlert((prev) => ({ ...prev, isOpen: false }));
+  };
 
   // สมมติว่าเรามี currentUser จาก context หรือ localStorage
   const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -62,6 +71,8 @@ const PostDetailPage = () => {
 
   const fetchPostDetail = async () => {
     try {
+      const check = await axiosInstance.get(`api/bookmark/${id}`);
+      setMarked(check.bookmarked)
       const response = await axiosInstance.get(`api/posts/${id}`);
       setPostData(response.data);
       setError("");
@@ -248,6 +259,34 @@ const PostDetailPage = () => {
     }
   };
 
+  const handleBookmark = async() => {
+    try {
+      const response = await axiosInstance.post(`api/bookmark/${id}`);
+      // console.log(response)
+      if (response.status === 201) {
+        setMarked(true)
+      }else if(response.status === 200){
+        const response = await axiosInstance.delete(`api/bookmark/${id}`);
+        setMarked(false)
+      }
+    } catch (error) {
+      console.error("Error creating report:", error);
+      setAlert({
+        isOpen: true,
+        type: "error",
+        message: error.response?.data?.message || "Error bookmarking",
+      });
+    }
+  }
+
+  const BookmarkSymbol = () => {
+    if(bookMark){
+      return '★'
+    }else{
+      return '☆'
+    }
+  }
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -329,7 +368,8 @@ const PostDetailPage = () => {
 
               <h1 className="text-lg sm:text-xl lg:text-2xl text-center my-4 sm:my-6 font-bold text-gray-900 relative group">
                 <span className="relative inline-block">
-                  {postData.title}
+                  {postData.title} 
+                  <button onClick={handleBookmark}><BookmarkSymbol/></button>
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500 transform origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
                 </span>
               </h1>
