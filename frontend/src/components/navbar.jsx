@@ -72,6 +72,12 @@ const Navbar = () => {
               >
                 Contact
               </Link>
+              <Link
+                to="/bookmark"
+                className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition duration-200"
+              >
+                Bookmark
+              </Link>
             </div>
           </div>
           {/* Right side: Profile and Auth buttons */}

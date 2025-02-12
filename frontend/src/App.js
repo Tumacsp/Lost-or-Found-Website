@@ -10,6 +10,7 @@ import ProfilePage from './pages/profile_page';
 import ReportPage from './pages/report/page';
 import SearchPage from './pages/search/page';
 import PostDetailPage from './pages/postdetail_page';
+import Bookmark from './pages/bookmark/page';
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/report" element={<ReportPage/>} />
         <Route path="/search" element={<SearchPage/>} />
         <Route path="/postdetail/:id" element={<PostDetailPage />} />
+        <Route path="/bookmark" element={<Bookmark />} />
       </Routes>
     </Router>
   );

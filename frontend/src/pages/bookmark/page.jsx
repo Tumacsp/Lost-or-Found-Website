@@ -1,9 +1,10 @@
 import {React, useState} from 'react';
-import Navbar from '../components/navbar';
-import Footer from '../components/footer';
-import Poster from "./card"
+import Navbar from '../../components/navbar';
+import Footer from '../../components/footer';
+import Poster from '../card';
 
-const MainPage = () => {
+import { handleError } from "../../utils/errorHandler";
+const Bookmark = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -35,4 +36,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default Bookmark;
