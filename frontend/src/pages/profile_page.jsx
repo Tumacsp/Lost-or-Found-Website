@@ -14,6 +14,7 @@ const Profile = () => {
     first_name: "",
     last_name: "",
     profile_picture: null,
+    phone_number: "",
   });
   const [originalProfile, setOriginalProfile] = useState(null);
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ const Profile = () => {
       formData.append("username", profile.username);
       formData.append("first_name", profile.first_name);
       formData.append("last_name", profile.last_name);
+      formData.append("phone_number", profile.phone_number);
 
       if (profile.profile_picture instanceof File) {
         formData.append("profile_picture", profile.profile_picture);
@@ -288,6 +290,26 @@ const Profile = () => {
                       className="mt-1 block w-full px-4 py-3 rounded-lg border-2 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-base font-semibold text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone_number"
+                      value={profile.phone_number || ""}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full px-4 py-3 rounded-lg border-2 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
+                      placeholder="0xx-xxx-xxxx"
+                    />
+                  </div>
+                  {error.phone_number && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {error.phone_number[0]}
+                    </p>
+                  )}
 
                   <div className="flex justify-end space-x-4 mt-8">
                     {!isEditing ? (

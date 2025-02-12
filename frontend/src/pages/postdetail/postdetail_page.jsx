@@ -428,7 +428,6 @@ const PostDetailPage = () => {
                   </div>
                 )}
               </div>
-
               <div className="bg-gray-50 rounded-lg p-4">
                 <h3 className="text-lg font-bold text-gray-800 mb-3">
                   Posted Date
@@ -440,6 +439,22 @@ const PostDetailPage = () => {
                       month: "long",
                       day: "numeric",
                     })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">
+                  Contact Information
+                </h3>
+                <div className="bg-white p-3 rounded-lg shadow-sm space-y-2">
+                  <p className="text-gray-600">
+                    <span className="font-medium">Phone: </span>
+                    {postData.user?.profile?.phone_number || "Not available"}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-medium">Email: </span>
+                    {postData.user?.email || "Not available"}
                   </p>
                 </div>
               </div>

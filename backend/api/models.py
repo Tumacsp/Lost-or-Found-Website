@@ -12,6 +12,7 @@ def profile_upload_path(instance, filename):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to=profile_upload_path, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
 
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -58,13 +59,5 @@ class Post(models.Model):
 class Bookmark(models.Model):
     post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-class FoundPost(models.Model):
-    post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    finder  = models.ForeignKey(User, on_delete=models.CASCADE)
-    found_at = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return f"{self.post.title} found by {self.found_by.username}"
 
 User._meta.get_field('email')._unique = True
