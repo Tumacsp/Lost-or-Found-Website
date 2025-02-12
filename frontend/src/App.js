@@ -9,8 +9,9 @@ import ResetPasswordPage from './pages/auth/reset_password_page';
 import ProfilePage from './pages/profile_page';
 import ReportPage from './pages/report/page';
 import SearchPage from './pages/search/page';
-import PostDetailPage from './pages/postdetail_page';
+import PostDetailPage from './pages/postdetail/postdetail_page';
 import Bookmark from './pages/bookmark/page';
+
 
 const App = () => {
   return (

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Edit, Trash2, AlertCircle, CheckCircle2, X } from "lucide-react";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
-import axiosInstance from "../utils/axios";
-import { handleError } from "../utils/errorHandler";
-import Map from "../components/map/map_show";
-import MapDragLaLongComponent from "../components/map/map_drag";
-import AlertModal from "../components/ui/alert";
+import Navbar from "../../components/navbar";
+import Footer from "../../components/footer";
+import axiosInstance from "../../utils/axios";
+import { handleError } from "../../utils/errorHandler";
+
+import Map from "../../components/map/map_show";
+import MapDragLaLongComponent from "../../components/map/map_drag";
+import AlertModal from "../../components/ui/alert";
+import FoundButton from "../../components/ui/postdetail/foundbutton";
+import StatusBadge from "../../components/ui/postdetail/statusbadge";
+import LocationDetails from "../../components/ui/postdetail/locationdetails";
 
 const PostDetailPage = () => {
   const { id } = useParams();
@@ -65,6 +69,31 @@ const PostDetailPage = () => {
       handleError(err, setError, navigate);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFound = async () => {
+    try {
+      await axiosInstance.post(`/api/posts/found/${id}`);
+      setAlertModal({
+        isOpen: true,
+        type: "success",
+        message: "Item marked as found successfully! Thank you for helping.",
+      });
+
+      setTimeout(() => {
+        setAlertModal({ ...alertModal, isOpen: false });
+        navigate("/");
+      }, 1500);
+
+      await fetchPostDetail();
+    } catch (error) {
+      console.error("Error marking post as found:", error);
+      setAlertModal({
+        isOpen: true,
+        type: "error",
+        message: "Failed to mark item as found. Please try again.",
+      });
     }
   };
 
@@ -337,21 +366,7 @@ const PostDetailPage = () => {
                   <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
                     Details
                   </h2>
-                  <span
-                    className={`inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base font-medium ${
-                      postData.status === "resolved"
-                        ? "bg-green-100 text-green-800"
-                        : postData.status === "active"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-200 text-gray-800"
-                    }`}
-                  >
-                    {postData.status === "resolved"
-                      ? "Found"
-                      : postData.status === "active"
-                      ? "Searching"
-                      : "Closed"}
-                  </span>
+                  <StatusBadge status={postData.status} />
                 </div>
 
                 {currentUser.id === postData.user.id && (
@@ -390,92 +405,16 @@ const PostDetailPage = () => {
               </div>
 
               <div className="space-y-8">
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-bold text-gray-800 mb-3">
-                    Description
-                  </h3>
-                  <div className="bg-white p-3 rounded-lg shadow-sm">
-                    <p className="text-gray-700 whitespace-pre-line text-base leading-relaxed">
-                      {postData.body_text}
-                    </p>
-                  </div>
-                </div>
-
                 <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
                   <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">
                     Location
                   </h3>
-                  {error ? (
-                    <p className="text-red-500 text-sm sm:text-base">{error}</p>
-                  ) : addressDetail.province ? (
-                    <div className="space-y-2 sm:space-y-3">
-                      {addressDetail.road && (
-                        <div className="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                          <span className="font-bold text-gray-700 w-32">
-                            Road:
-                          </span>
-                          <span className="text-gray-600">
-                            {addressDetail.road}
-                          </span>
-                        </div>
-                      )}
-                      {addressDetail.subdistrict && (
-                        <div className="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                          <span className="font-bold text-gray-700 w-32">
-                            Sub-district:
-                          </span>
-                          <span className="text-gray-600">
-                            {addressDetail.subdistrict}
-                          </span>
-                        </div>
-                      )}
-                      {addressDetail.district && (
-                        <div className="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                          <span className="font-bold text-gray-700 w-32">
-                            District:
-                          </span>
-                          <span className="text-gray-600">
-                            {addressDetail.district}
-                          </span>
-                        </div>
-                      )}
-                      {addressDetail.province && (
-                        <div className="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                          <span className="font-bold text-gray-700 w-32">
-                            Province:
-                          </span>
-                          <span className="text-gray-600">
-                            {addressDetail.province}
-                          </span>
-                        </div>
-                      )}
-                      {addressDetail.postcode && (
-                        <div className="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                          <span className="font-bold text-gray-700 w-32">
-                            Postal Code:
-                          </span>
-                          <span className="text-gray-600">
-                            {addressDetail.postcode}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                        <span className="font-semibold text-gray-700 min-w-[100px] sm:min-w-[120px] text-sm sm:text-base">
-                          Coordinates:
-                        </span>
-                        <span className="text-gray-600 text-sm sm:text-base">
-                          ({postData.location.latitude},{" "}
-                          {postData.location.longitude})
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-white p-2 sm:p-3 rounded-lg shadow-sm">
-                      <p className="text-sm sm:text-base text-gray-600">
-                        Loading location...
-                      </p>
-                    </div>
-                  )}
+                  <LocationDetails
+                    addressDetail={addressDetail}
+                    coordinates={postData.location}
+                    error={error}
+                    isLoading={loading}
+                  />
                 </div>
 
                 <div className="mt-4">
@@ -485,13 +424,13 @@ const PostDetailPage = () => {
                   />
                 </div>
 
-                {postData.status === "active" && (
-                  <div className="pt-4">
-                    <button className="w-full py-3 sm:py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg font-bold shadow-lg hover:shadow-xl">
-                      Found it!
-                    </button>
-                  </div>
-                )}
+                <div className="pt-4">
+                  <FoundButton
+                    post={postData}
+                    currentUser={currentUser}
+                    handleFound={handleFound}
+                  />
+                </div>
               </div>
             </div>
           </div>

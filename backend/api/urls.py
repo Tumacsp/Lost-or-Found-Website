@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProfileView, PostCreateView, ProfileChangePassword, PostView, Search
+from .views import ProfileView, PostCreateView, ProfileChangePassword, PostView, Search, PostFoundView
 
 urlpatterns = [
     #profile
@@ -12,6 +12,7 @@ urlpatterns = [
     path('posts/create/', PostCreateView.as_view(), name='post-create'),
     path('posts/edit/<int:post_id>', PostCreateView.as_view(), name='post-update'),
     path('posts/delete/<int:post_id>', PostCreateView.as_view(), name='post-delete'),
+    path('posts/found/<int:post_id>', PostFoundView.as_view(), name="post-found"),
 
     #search post
     path('search/<str:terms>', Search.as_view(), name='get-post-by-title'),

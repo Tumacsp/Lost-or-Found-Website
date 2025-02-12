@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.authtoken.models import Token
 from .models import *
+from django.db import transaction
 
 class ProfileView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -228,6 +229,54 @@ class PostView(APIView):
             serializer = PostSerializer(post, context={'request': request})
             return Response(serializer.data)
 
+class PostFoundView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, post_id):
+        try:
+            with transaction.atomic():
+                post = get_object_or_404(Post, id=post_id)
+                
+                if post.user == request.user:
+                    return Response(
+                        {'error': 'You cannot mark your own post as found'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                if post.status != 'active':
+                    return Response(
+                        {'error': 'This post is no longer active'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                if FoundPost.objects.filter(post=post).exists():
+                    return Response(
+                        {'error': 'This item has already been found'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                # บันทึกว่าใครเป็นคนหาเจอ
+                FoundPost.objects.create(
+                    post=post,
+                    finder=request.user
+                )
+                
+                # อัพเดทสถานะ post เป็น resolved
+                post.status = 'resolved'
+                post.save()
+                
+                return Response({
+                    'message': 'Successfully marked as found',
+                    'finder': request.user.username,
+                    'found_at': timezone.now()
+                }, status=status.HTTP_200_OK)
+                
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
 class Search(APIView):
     def get(self, request, terms=None):
         if terms is None:
