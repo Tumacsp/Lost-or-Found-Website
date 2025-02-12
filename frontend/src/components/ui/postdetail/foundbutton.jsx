@@ -10,6 +10,11 @@ const FoundButton = ({ post, currentUser, handleFound }) => {
     active: "bg-green-600 hover:bg-green-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
   };
 
+  // If not owner, don't render anything
+  if (!isOwnPost) {
+    return null;
+  }
+
   if (isInactive) {
     return (
       <div className="pt-4">
@@ -23,26 +28,13 @@ const FoundButton = ({ post, currentUser, handleFound }) => {
     );
   }
 
-  if (isOwnPost) {
-    return (
-      <div className="pt-4">
-        <button
-          disabled
-          className={`${buttonStyles.base} ${buttonStyles.disabled}`}
-        >
-          Can't find own post
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="pt-4">
       <button
         onClick={handleFound}
         className={`${buttonStyles.base} ${buttonStyles.active} flex items-center justify-center gap-2 sm:gap-3`}
       >
-        Found it!
+        Mark as Found
       </button>
     </div>
   );
