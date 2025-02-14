@@ -77,7 +77,8 @@ const MainPage = () => {
               </a>
             </div>
           </div>
-          <div className="mt-16">
+          <h2 className="text-3xl text-center font-bold text-gray-900 mt-8">Reported Items</h2>
+          <div className="mt-8">
             <Poster />
           </div>
         </div>
