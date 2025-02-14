@@ -32,7 +32,7 @@ const SearchPage = () => {
     function handleSearchChange(e){
       setTerm(e.target.value)
     }
-    const cards = postsData.map((data) => makeCard(data.id, data.picture_name, data.category, data.title, data.reward));
+    const cards = postsData.map((data) => makeCard(data.id, data.picture_name, data.category, data.title, data.reward, data.status));
     function Result(){
       if(postsData.length > 0){
         return cards
