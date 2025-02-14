@@ -71,10 +71,10 @@ const PostDetailPage = () => {
 
   const fetchPostDetail = async () => {
     try {
-      const check = await axiosInstance.get(`api/bookmark/${id}`);
-      setMarked(check.bookmarked)
       const response = await axiosInstance.get(`api/posts/${id}`);
       setPostData(response.data);
+      const check = await axiosInstance.get(`api/bookmark/${id}`);
+      setMarked(check.bookmarked)
       setError("");
     } catch (err) {
       handleError(err, setError, navigate);

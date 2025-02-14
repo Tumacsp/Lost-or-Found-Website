@@ -287,11 +287,14 @@ class BookmarkView(APIView):
             serializer = PostSerializer(posts, many=True, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            post = Post.objects.get(pk=post_id)
-            user = request.user
-            bookmark_exists = Bookmark.objects.filter(post=post, user=user).exists()
-            if bookmark_exists:
-                return Response({"bookmarked": True}, status=status.HTTP_200_OK)
+            if(not request.user.is_anonymous):
+                user = request.user
+                post = Post.objects.get(pk=post_id)
+                bookmark_exists = Bookmark.objects.filter(post=post, user=user).exists()
+                if bookmark_exists:
+                    return Response({"bookmarked": True}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"bookmarked": False}, status=status.HTTP_200_OK)
             else:
                 return Response({"bookmarked": False}, status=status.HTTP_200_OK)
 
