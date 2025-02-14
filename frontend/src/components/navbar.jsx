@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 import axiosInstance from "../utils/axios";
+import { logout, isAuthenticated } from "../utils/auth";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -9,26 +10,24 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    setIsLoggedIn(isAuthenticated());
   }, []);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   setIsLoggedIn(!!token);
+  // }, []);
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post("auth/logout/");
-      localStorage.removeItem("token");
-      delete axiosInstance.defaults.headers.common["Authorization"];
+      await logout();
+      // await axiosInstance.post("auth/logout/");
+      // localStorage.removeItem("token");
+      // delete axiosInstance.defaults.headers.common["Authorization"];
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        localStorage.removeItem("token");
-        delete axiosInstance.defaults.headers.common["Authorization"];
-        setIsLoggedIn(false);
-        navigate("/");
-      } else {
-        alert("Error during logout. Please try again.");
-      }
+      alert("Error during logout. Please try again.");
     }
   };
 

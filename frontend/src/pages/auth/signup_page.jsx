@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import { Link } from "react-router-dom";
+import { register } from "../../utils/auth";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -35,27 +36,22 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await axiosInstance.post("auth/register/", formData);
-      localStorage.setItem("token", response.data.token);
-      axiosInstance.defaults.headers.common[
-        "Authorization"
-      ] = `Token ${response.data.token}`;
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: response.data.user_id,
-          username: response.data.username,
-        })
-      );
+      await register(formData);
+      // const response = await axiosInstance.post("auth/register/", formData);
+      // localStorage.setItem("token", response.data.token);
+      // axiosInstance.defaults.headers.common[
+      //   "Authorization"
+      // ] = `Token ${response.data.token}`;
+      // localStorage.setItem(
+      //   "user",
+      //   JSON.stringify({
+      //     id: response.data.user_id,
+      //     username: response.data.username,
+      //   })
+      // );
       navigate("/");
     } catch (err) {
-      if (err.response?.data) {
-        setErrors(err.response.data.errors);
-      } else {
-        setErrors({
-          non_field_errors: ["An error occurred during registration"],
-        });
-      }
+      setErrors(err);
     } finally {
       setIsLoading(false);
     }

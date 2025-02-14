@@ -126,28 +126,28 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         # Check if email already exists
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError('A user with this email already exists.')
+            raise serializers.ValidationError('This email already exists.')
         
         return value
 
     def validate_username(self, value):
-        # Convert username to lowercase
-        value = value.lower()
-        
-        # Check username length
+
         if len(value) < 3:
             raise serializers.ValidationError('Username must be at least 3 characters long.')
         if len(value) > 30:
             raise serializers.ValidationError('Username cannot exceed 30 characters.')
         
-        # Check if username already exists
-        if User.objects.filter(username=value).exists():
+        if not re.match('^[a-zA-Z0-9_]*$', value):
+            raise serializers.ValidationError('Username can only contain letters, numbers, and underscores.')
+        
+        if User.objects.filter(username__iexact=value).exists():
             raise serializers.ValidationError('This username is already taken.')
         
         return value
 
     def validate_password(self, value):
-        # Password strength validation
+        password_confirm = self.initial_data.get('password_confirm')
+
         if len(value) < 8:
             raise serializers.ValidationError('Password must be at least 8 characters long.')
         
@@ -159,17 +159,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             
         if not any(char.islower() for char in value):
             raise serializers.ValidationError('Password must contain at least one lowercase letter.')
+        
+        if password_confirm and value != password_confirm:
+            raise serializers.ValidationError('Passwords do not match.')
 
         return value
-
-    def validate(self, data):
-        # Check if passwords match
-        if data.get('password') != data.get('password_confirm'):
-            raise serializers.ValidationError({
-                'password_confirm': ['Passwords do not match.']
-            })
-        
-        return data
 
     def create(self, validated_data):
         # Remove password_confirm from validated data
