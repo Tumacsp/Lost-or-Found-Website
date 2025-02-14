@@ -12,14 +12,14 @@ const Bookmark = () => {
     const navigate = useNavigate();
     const [postsData, setPostData] = useState([])
     function search(){
-        console.log("Finding Post with Title:" + terms)
+        // console.log("Finding Post with Title:" + terms)
         fetchPost()
     }
     const fetchPost = async() =>{
       try {
           const response = await axiosInstance.get("api/bookmark/");
           setPostData(response.data)
-          console.log("Post Found", response.data)
+          // console.log("Post Found", response.data)
           setError("");
       } catch (err) {
           handleError(err, setError, navigate);

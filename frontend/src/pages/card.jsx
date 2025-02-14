@@ -1818,7 +1818,7 @@ const Poster = () =>{
         try {
             const response = await axiosInstance.get("api/posts/");
             setPostData(response.data)
-            console.log(response.data)
+            // console.log(response.data)
             setError("");
         } catch (err) {
             handleError(err, setError, navigate);

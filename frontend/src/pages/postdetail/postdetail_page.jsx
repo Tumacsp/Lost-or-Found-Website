@@ -204,9 +204,9 @@ const PostDetailPage = () => {
       formData.append("latitude", editForm.location.latitude);
       formData.append("longitude", editForm.location.longitude);
 
-      formData.forEach((value, key) => {
-        console.log(key, value);
-      });
+      // formData.forEach((value, key) => {
+      //   console.log(key, value);
+      // });
 
       // เพิ่มรูปภาพถ้ามีการเลือก
       if (selectedImage) {
