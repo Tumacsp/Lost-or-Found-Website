@@ -3,6 +3,7 @@ import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 import Poster from "./card";
 import { Search } from 'lucide-react';
+import hero from '../components/image/HeroImage.webp'
 
 const MainPage = () => {
   return (
@@ -13,11 +14,11 @@ const MainPage = () => {
         <div className="relative bg-gray-100">
           <div className="absolute inset-0">
             <img
-              src="/api/placeholder/1920/600"
+              src={hero}
               alt="Lost and Found Illustration"
-              className="w-full h-full object-contain bg-gray-100"
+              className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-100/80 to-gray-100/80" />
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-100/80 to-gray-100/80 backdrop-blur-sm" />
           </div>
           
           <div className="relative max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
