@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { CardWrapper } from "../../components/ui/admin/dashboard/card";
 import PostStatsGraph from "../../components/ui/admin/dashboard/post-chart";
+import LoadingSkeleton from "../../components/ui/admin/dashboard/skeleton";
 import { fetchDashboardData } from "../../utils/apiservice";
 
 const DashboardPage = () => {
@@ -11,6 +12,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
         const data = await fetchDashboardData();
         setDashboardData(data);
       } catch (err) {
@@ -23,13 +25,31 @@ const DashboardPage = () => {
     loadDashboardData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!dashboardData) return <div>No data available</div>;
+  if (loading) return <LoadingSkeleton />;
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="flex h-96 items-center justify-center">
+          <p className="text-lg text-red-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="flex h-96 items-center justify-center">
+          <p className="text-lg text-gray-500">No data available</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <h1 className="mb-6 text-2xl font-bold md:text-3xl">Dashboard</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Dashboard</h1>
       <CardWrapper data={dashboardData} />
       <PostStatsGraph data={dashboardData} />
     </div>

@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { fetchDashboardUsers, banUser } from "../../utils/apiservice";
-import { UserCircle2 } from "lucide-react";
+import UserCard from "../../components/ui/admin/dashboard/user/usercard";
+import StatsCard from "../../components/ui/admin/dashboard/user/userstats_card";
+import PaginationControls from "../../components/ui/admin/dashboard/pagecontrol";
+
+const USERS_PER_PAGE = 5;
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     loadUsers();
@@ -13,8 +18,8 @@ const UsersPage = () => {
 
   const loadUsers = async () => {
     try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const data = await fetchDashboardUsers();
-      console.log("Users data:", data);
       setUsers(data);
     } catch (err) {
       setError("Failed to load users");
@@ -26,55 +31,111 @@ const UsersPage = () => {
   const handleBanUser = async (userId) => {
     try {
       await banUser(userId);
-      // Reload users after successful ban
       await loadUsers();
     } catch (err) {
       setError("Failed to ban user");
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="p-4 bg-red-50 text-red-600 rounded-lg">
+        Error: {error}
+      </div>
+    );
+
+  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
+  const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+  const paginatedUsers = users.slice(startIndex, startIndex + USERS_PER_PAGE);
+
+  const statsData = [
+    {
+      title: "Total Users",
+      value: users.length,
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-600",
+    },
+    {
+      title: "Active Users",
+      value: users.filter((user) => user.is_active).length,
+      bgColor: "bg-green-50",
+      textColor: "text-green-600",
+    },
+    {
+      title: "Inactive Users",
+      value: users.filter((user) => !user.is_active).length,
+      bgColor: "bg-red-50",
+      textColor: "text-red-600",
+    },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-6 md:px-6 lg:px-8">
-      <h1 className="mb-6 text-2xl font-bold md:text-3xl">Users</h1>
-      <div className="rounded-lg bg-white shadow">
-        <div className="divide-y divide-gray-200">
-          {users.map((user) => (
-            <div
-              key={user.id}
-              className="flex flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex items-center gap-3">
-                <div className="shrink-0">
-                  {user.profile_picture ? (
-                    <img
-                      src={user.profile_picture}
-                      alt={user.username}
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                  ) : (
-                    <UserCircle2 className="h-10 w-10 text-gray-400" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-gray-900">
-                    {user.username}
-                  </p>
-                  <p className="truncate text-sm text-gray-500">{user.email}</p>
-                </div>
-              </div>
-              <button
-                onClick={() => handleBanUser(user.id)}
-                className="rounded-md bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-              >
-                Ban User
-              </button>
-            </div>
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold md:text-3xl mb-4">
+          Users Management
+        </h1>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          {statsData.map((stat, index) => (
+            <StatsCard
+              key={index}
+              title={stat.title}
+              value={stat.value}
+              bgColor={stat.bgColor}
+              textColor={stat.textColor}
+            />
           ))}
         </div>
       </div>
+
+      {/* Users List */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="divide-y divide-gray-200">
+          {loading ? (
+            <div className="flex items-center justify-center p-6">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : error ? (
+            <div className="p-4 text-red-600">Error: {error}</div>
+          ) : (
+            <>
+              {users
+                .slice(
+                  (currentPage - 1) * USERS_PER_PAGE,
+                  currentPage * USERS_PER_PAGE
+                )
+                .map((user) => (
+                  <UserCard
+                    key={user.id}
+                    user={user}
+                    onBanUser={handleBanUser}
+                  />
+                ))}
+            </>
+          )}
+        </div>
+      </div>
+
+      {users.length > USERS_PER_PAGE && (
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

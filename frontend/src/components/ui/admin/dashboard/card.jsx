@@ -38,7 +38,7 @@ const CardWrapper = ({ data }) => {
   } = data.overview;
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 pb-10">
+    <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <Card title="Total Users" value={totalUsers} type="users" />
       <Card title="Total Posts" value={totalPosts} type="totalPosts" />
       <Card title="Active Posts" value={activePosts} type="activePosts" />
