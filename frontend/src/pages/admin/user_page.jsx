@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { fetchDashboardUsers, banUser } from "../../utils/apiservice";
-import UserCard from "../../components/ui/admin/dashboard/user/usercard";
-import StatsCard from "../../components/ui/admin/dashboard/user/userstats_card";
-import PaginationControls from "../../components/ui/admin/dashboard/pagecontrol";
+import UserCard from "../../components/ui/admin/user/usercard";
+import StatsCard from "../../components/ui/admin/user/userstats_card";
+import PaginationControls from "../../components/ui/admin/pagecontrol";
 
 const USERS_PER_PAGE = 5;
 

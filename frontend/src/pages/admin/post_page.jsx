@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDashboardPosts, banPost } from "../../utils/apiservice";
-import PostCard from '../../components/ui/admin/dashboard/post/postcard';
-import PaginationControls from '../../components/ui/admin/dashboard/pagecontrol';
+import PostCard from '../../components/ui/admin/post/postcard';
+import PaginationControls from '../../components/ui/admin/pagecontrol';
 
 const POSTS_PER_PAGE = 5;
 
