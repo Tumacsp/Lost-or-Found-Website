@@ -12,6 +12,7 @@ from .models import PasswordResetToken
 from .utils import generate_token, send_reset_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from api.models import Profile
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -20,6 +21,7 @@ def register(request):
     if serializer.is_valid():
         try:
             user = serializer.save()
+            Profile.objects.create(user=user)
             token, created = Token.objects.get_or_create(user=user)
             return Response({
                 'token': token.key,
@@ -48,9 +50,9 @@ def login(request):
             'token': token.key,
             'user_id': user.pk,
             'username': user.username,
+            'is_staff': user.is_staff,
             'message': 'Login successful.'
         })
-    print("Login Errors:", serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])

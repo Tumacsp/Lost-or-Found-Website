@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
-import axiosInstance from "../utils/axios";
 import { logout, isAuthenticated } from "../utils/auth";
 
 const Navbar = () => {

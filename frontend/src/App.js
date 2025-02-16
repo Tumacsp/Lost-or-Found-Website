@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import Layout from './components/ui/admin/layout';
 import MainPage from "./pages/main_page";
 import LoginPage from "./pages/auth/login_page";
 import SignupPage from "./pages/auth/signup_page";
@@ -11,6 +12,9 @@ import ReportPage from "./pages/report/page";
 import SearchPage from "./pages/search/page";
 import PostDetailPage from "./pages/postdetail/postdetail_page";
 import Bookmark from "./pages/bookmark/page";
+import DashboardPage from './pages/admin/dashboard';
+import UsersPage from './pages/admin/user_page';
+import PostsPage from './pages/admin/post_page';
 import { isAuthenticated } from "./utils/auth";
 
 const ProtectedRoute = ({ children }) => {
@@ -44,6 +48,10 @@ const App = () => {
         <Route path="/profile" element={<ProtectedRoute> <ProfilePage /> </ProtectedRoute>} />
         <Route path="/report" element={<ProtectedRoute> <ReportPage /> </ProtectedRoute>} />
         <Route path="/bookmark" element={<ProtectedRoute> <Bookmark /> </ProtectedRoute>} />
+        {/* dashbaord */}
+        <Route path="/admin-dashboard" element={<ProtectedRoute> <Layout> <DashboardPage /> </Layout> </ProtectedRoute>} />
+        <Route path="/admin-dashboard/users" element={<ProtectedRoute> <Layout> <UsersPage /> </Layout> </ProtectedRoute>} />
+        <Route path="/admin-dashboard/posts" element={<ProtectedRoute> <Layout> <PostsPage /> </Layout> </ProtectedRoute>} />
       </Routes>
     </Router>
   );

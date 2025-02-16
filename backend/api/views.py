@@ -4,12 +4,16 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from .errors import CustomError
-from .serializers import UserProfileSerializer, PostSerializer, BookmarkSerializer
+from .serializers import UserProfileSerializer, PostSerializer, BookmarkSerializer, UserSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action, api_view
 from rest_framework.authtoken.models import Token
 from .models import *
+from django.db.models import Count
+from datetime import timedelta
+from django.utils import timezone
+from django.db.models.functions import TruncDate
 from django.db import transaction
 
 class ProfileView(APIView):
@@ -106,6 +110,11 @@ class ProfileChangePassword(APIView):
 class PostCreateView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get(self, request):
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True, context={'request': request})
+        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         try:
@@ -316,3 +325,61 @@ class BookmarkView(APIView):
             bookmark.delete()
             return Response({"message": "Bookmark removed."}, status=status.HTTP_204_NO_CONTENT)
         return Response({"message": "Bookmark not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class DashboardStatsAPI(APIView):
+    def get(self, request):
+        try:
+            # ข้อมูลพื้นฐาน
+            total_users = User.objects.count()
+            total_posts = Post.objects.count()
+            active_posts = Post.objects.filter(status='active').count()
+            resolved_posts = Post.objects.filter(status='resolved').count()
+
+            # ดึงข้อมูล 7 วันล่าสุด
+            end_date = timezone.now()
+            start_date = end_date - timedelta(days=7)
+
+            daily_stats = Post.objects.filter(
+                created_at__gte=start_date,
+                created_at__lte=end_date
+            ).annotate(
+                date=TruncDate('created_at')
+            ).values('date').annotate(
+                posts=Count('id')
+            ).order_by('date')
+
+            date_list = []
+            current_date = start_date.date()
+            while current_date <= end_date.date():
+                posts_count = next(
+                    (item['posts'] for item in daily_stats if item['date'] == current_date),
+                    0
+                )
+                date_list.append({
+                    'date': current_date.strftime('%Y-%m-%d'),
+                    'posts': posts_count
+                })
+                current_date += timedelta(days=1)
+
+            return Response({
+                'overview': {
+                    'totalUsers': total_users,
+                    'totalPosts': total_posts,
+                    'activePosts': active_posts,
+                    'resolvedPosts': resolved_posts,
+                },
+                'dailyStats': date_list
+            })
+
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+class DashboardUser(APIView):
+    def get(self, request):
+        users = User.objects.select_related('profile').all()
+        serializer = UserProfileSerializer(users, many=True, context={'request': request})
+        return Response(serializer.data)
+    

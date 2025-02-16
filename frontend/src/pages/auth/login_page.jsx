@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axios";
 import { Link } from "react-router-dom";
 import { login } from "../../utils/auth";
 
@@ -34,7 +33,13 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      await login(formData);
+      const authData = await login(formData);
+      if (authData.is_staff) {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/");
+      }
+
       // const response = await axiosInstance.post("auth/login/", formData);
       // localStorage.setItem("token", response.data.token);
       // axiosInstance.defaults.headers.common[
@@ -47,7 +52,7 @@ const LoginPage = () => {
       //     username: response.data.username,
       //   })
       // );
-      navigate("/");
+      // navigate("/");
     } catch (err) {
       setErrors(err);
     } finally {
