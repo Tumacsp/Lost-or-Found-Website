@@ -558,8 +558,8 @@ const PostDetailPage = () => {
                   <p className="text-sm text-gray-700 bg-gray-100 px-4 py-2 rounded-md">
                     ✅ Selected location:{" "}
                     <span className="font-medium">
-                      {postData?.location?.latitude},{" "}
-                      {postData?.location?.longitude}
+                      {editForm.location.latitude},{" "}
+                      {editForm.location.longitude}
                     </span>
                   </p>
                 </div>
