@@ -4,6 +4,8 @@ from .views import *
 urlpatterns = [
     #users
     path('users/', DashboardUser.as_view(), name='get-all-users'),
+    path('users/<int:user_id>/ban', BanUser.as_view(), name='ban-user'),
+    path('users/<int:user_id>/unban', UnBanUser.as_view(), name='unban-user'),
 
     #profile
     path('profile/', ProfileView.as_view(), name='profile'),
@@ -12,11 +14,13 @@ urlpatterns = [
     #post
     path('posts/', PostView.as_view(), name='get-post'),
     path('posts/<int:pk>/', PostView.as_view(), name='get-post-by-id'),
-    path('posts/all', PostView.as_view(), name='get-all-post'),
+    path('posts/all', PostCreateView.as_view(), name='get-all-post'),
     path('posts/create/', PostCreateView.as_view(), name='post-create'),
     path('posts/edit/<int:post_id>', PostCreateView.as_view(), name='post-update'),
     path('posts/delete/<int:post_id>', PostCreateView.as_view(), name='post-delete'),
     path('posts/found/<int:post_id>', PostFoundView.as_view(), name="post-found"),
+    path('posts/<int:post_id>/ban', BanPost.as_view(), name='ban-post'),
+    path('posts/<int:post_id>/unban', UnBanPost.as_view(), name='unban-post'),
 
     #search post
     path('search/<str:terms>', Search.as_view(), name='get-post-by-title'),
@@ -28,4 +32,5 @@ urlpatterns = [
 
     #dashboard
     path('dashboard/stats/', DashboardStatsAPI.as_view(), name='dashboard-stats'),
+
 ]

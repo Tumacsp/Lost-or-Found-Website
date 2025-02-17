@@ -18,10 +18,17 @@ const Sidebar = () => {
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
       <Link
-        className="mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-4 md:h-40"
+        className="mb-2 flex h-20 flex-col items-center justify-center rounded-md bg-blue-600 p-4 md:h-40"
         to="/admin-dashboard"
       >
-        <div className="w-32 text-white md:w-40">Lost & Found Admin</div>
+        <img
+          className="h-8 w-8 md:h-12 md:w-12 mb-2 md:mb-4 brightness-0 invert"
+          src="https://cdn-icons-png.flaticon.com/512/2695/2695813.png"
+          alt="Logo"
+        />
+        <div className="text-white text-center font-medium">
+          Lost & Found Admin
+        </div>
       </Link>
       <div className="flex grow flex-col gap-2">
         <NavLink to="/admin-dashboard" icon={Home} text="Dashboard" />

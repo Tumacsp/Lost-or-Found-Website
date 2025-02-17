@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { fetchDashboardUsers, banUser } from "../../utils/apiservice";
+import {
+  fetchDashboardUsers,
+  banUser,
+  unbanUser,
+} from "../../utils/apiservice";
 import UserCard from "../../components/ui/admin/user/usercard";
 import StatsCard from "../../components/ui/admin/user/userstats_card";
 import PaginationControls from "../../components/ui/admin/pagecontrol";
+import AlertModal from "../../components/ui/alert";
 
 const USERS_PER_PAGE = 5;
 
@@ -11,14 +16,28 @@ const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    type: "success",
+    message: "",
+  });
 
   useEffect(() => {
     loadUsers();
   }, []);
 
+  useEffect(() => {
+    if (alert.type === "success" && alert.isOpen) {
+      const timer = setTimeout(() => {
+        setAlert((prev) => ({ ...prev, isOpen: false }));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [alert]);
+
   const loadUsers = async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const data = await fetchDashboardUsers();
       setUsers(data);
     } catch (err) {
@@ -30,11 +49,44 @@ const UsersPage = () => {
 
   const handleBanUser = async (userId) => {
     try {
-      await banUser(userId);
+      const response = await banUser(userId);
+      setAlert({
+        isOpen: true,
+        type: "success",
+        message: response.message || "User has been banned successfully",
+      });
       await loadUsers();
     } catch (err) {
-      setError("Failed to ban user");
+      const errorMessage = err.response?.data?.error || "Failed to Ban user";
+      setAlert({
+        isOpen: true,
+        type: "error",
+        message: errorMessage,
+      });
     }
+  };
+
+  const handleUnbanUser = async (userId) => {
+    try {
+      const response = await unbanUser(userId);
+      setAlert({
+        isOpen: true,
+        type: "success",
+        message: response.message || "User has been unbanned successfully",
+      });
+      await loadUsers();
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || "Failed to Unban user";
+      setAlert({
+        isOpen: true,
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
+
+  const handleCloseAlert = () => {
+    setAlert((prev) => ({ ...prev, isOpen: false }));
   };
 
   const handlePageChange = (page) => {
@@ -112,18 +164,14 @@ const UsersPage = () => {
             <div className="p-4 text-red-600">Error: {error}</div>
           ) : (
             <>
-              {users
-                .slice(
-                  (currentPage - 1) * USERS_PER_PAGE,
-                  currentPage * USERS_PER_PAGE
-                )
-                .map((user) => (
-                  <UserCard
-                    key={user.id}
-                    user={user}
-                    onBanUser={handleBanUser}
-                  />
-                ))}
+              {paginatedUsers.map((user) => (
+                <UserCard
+                  key={user.id}
+                  user={user}
+                  onBanUser={handleBanUser}
+                  onUnbanUser={handleUnbanUser}
+                />
+              ))}
             </>
           )}
         </div>
@@ -136,6 +184,13 @@ const UsersPage = () => {
           onPageChange={handlePageChange}
         />
       )}
+
+      <AlertModal
+        isOpen={alert.isOpen}
+        type={alert.type}
+        message={alert.message}
+        onClose={handleCloseAlert}
+      />
     </div>
   );
 };

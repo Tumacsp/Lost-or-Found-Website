@@ -50,3 +50,23 @@ export const banPost = async (postId) => {
     throw error;
   }
 };
+
+export const unbanUser = async (userId) => {
+  try {
+    const response = await axiosInstance.put(`/api/users/${userId}/unban`);
+    return response.data;
+  } catch (error) {
+    console.error("Error unbanning user:", error);
+    throw error;
+  }
+};
+
+export const unbanPost = async (postId) => {
+  try {
+    const response = await axiosInstance.put(`/api/posts/${postId}/unban`);
+    return response.data;
+  } catch (error) {
+    console.error("Error unbanning post:", error);
+    throw error;
+  }
+};

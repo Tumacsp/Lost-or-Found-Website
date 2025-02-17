@@ -112,7 +112,7 @@ class PostCreateView(APIView):
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get(self, request):
-        posts = Post.objects.all()
+        posts = Post.objects.all().order_by('title')
         serializer = PostSerializer(posts, many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -379,7 +379,119 @@ class DashboardStatsAPI(APIView):
         
 class DashboardUser(APIView):
     def get(self, request):
-        users = User.objects.select_related('profile').all()
+        users = User.objects.select_related('profile').filter(is_staff=False)
         serializer = UserProfileSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
+
+class BanUser(APIView):
     
+    def put(self, request, user_id):
+        try:
+            user = get_object_or_404(User, id=user_id)
+            
+            if not user.is_active:
+                return Response(
+                    {"error": "User is already banned"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            user.is_active = False
+            user.save()
+            
+            return Response(
+                {
+                    "message": f"User {user.username} has been banned successfully",
+                },
+                status=status.HTTP_200_OK
+            )
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class BanPost(APIView):
+    
+    def put(self, request, post_id):
+        try:
+            post = get_object_or_404(Post, id=post_id)
+            
+            if post.status == 'inactive':
+                return Response(
+                    {"error": "Post is already inactive"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            post.status = 'inactive'
+            post.save()
+            
+            return Response(
+                {
+                    "message": f"Post {post.title} has been set to inactive successfully",
+                },
+                status=status.HTTP_200_OK
+            )
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class UnBanUser(APIView):
+    
+    def put(self, request, user_id):
+        try:
+            user = get_object_or_404(User, id=user_id)
+            
+            if user.is_active:
+                return Response(
+                    {"error": "User is not banned"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            user.is_active = True
+            user.save()
+            
+            return Response(
+                {
+                    "message": f"User {user.username} has been unbanned successfully",
+                },
+                status=status.HTTP_200_OK
+            )
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class UnBanPost(APIView):
+    
+    def put(self, request, post_id):
+        try:
+            post = get_object_or_404(Post, id=post_id)
+            
+            if post.status == 'active':
+                return Response(
+                    {"error": "Post is already active"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            post.status = 'active'
+            post.save()
+            
+            return Response(
+                {
+                    "message": f"Post {post.title} has been set to active successfully",
+                },
+                status=status.HTTP_200_OK
+            )
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
