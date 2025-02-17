@@ -27,7 +27,7 @@ const Sidebar = () => {
           alt="Logo"
         />
         <div className="text-white text-center font-medium">
-          Lost & Found Admin
+          Lost or Found Admin
         </div>
       </Link>
       <div className="flex grow flex-col gap-2">
