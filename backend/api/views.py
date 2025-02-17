@@ -16,6 +16,24 @@ from django.utils import timezone
 from django.db.models.functions import TruncDate
 from django.db import transaction
 
+class StaffPermissionMixin:
+    """
+    A mixin that checks if the user has staff permissions.
+    This will be reused across all admin-only views.
+    """
+    def check_staff_permission(self, request):
+        if not request.user.is_authenticated:
+            return Response(
+                {"error": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Staff privileges required"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return None
+    
 class ProfileView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -107,11 +125,15 @@ class ProfileChangePassword(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-class PostCreateView(APIView):
+class PostCreateView(APIView, StaffPermissionMixin):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get(self, request):
+        permission_check = self.check_staff_permission(request)
+        if permission_check:
+            return permission_check
+        
         posts = Post.objects.all().order_by('title')
         serializer = PostSerializer(posts, many=True, context={'request': request})
         return Response(serializer.data)
@@ -239,6 +261,7 @@ class PostView(APIView):
             return Response(serializer.data)
         
 class PostFoundView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     
     def post(self, request, post_id):
@@ -287,6 +310,9 @@ class Search(APIView):
             return Response(serializer.data)
 
 class BookmarkView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, post_id=None):
         """get an array of posts"""
         if post_id is None:
@@ -326,8 +352,15 @@ class BookmarkView(APIView):
             return Response({"message": "Bookmark removed."}, status=status.HTTP_204_NO_CONTENT)
         return Response({"message": "Bookmark not found."}, status=status.HTTP_404_NOT_FOUND)
 
-class DashboardStatsAPI(APIView):
+class DashboardStatsAPI(APIView, StaffPermissionMixin):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
+        permission_check = self.check_staff_permission(request)
+        if permission_check:
+            return permission_check
+        
         try:
             # ข้อมูลพื้นฐาน
             total_users = User.objects.count()
@@ -377,15 +410,27 @@ class DashboardStatsAPI(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
-class DashboardUser(APIView):
+class DashboardUser(APIView, StaffPermissionMixin):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
+        permission_check = self.check_staff_permission(request)
+        if permission_check:
+            return permission_check
+        
         users = User.objects.select_related('profile').filter(is_staff=False)
         serializer = UserProfileSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
 
-class BanUser(APIView):
+class BanUser(APIView, StaffPermissionMixin):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def put(self, request, user_id):
+        permission_check = self.check_staff_permission(request)
+        if permission_check:
+            return permission_check
         try:
             user = get_object_or_404(User, id=user_id)
             
@@ -411,9 +456,14 @@ class BanUser(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-class BanPost(APIView):
+class BanPost(APIView, StaffPermissionMixin):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def put(self, request, post_id):
+        permission_check = self.check_staff_permission(request)
+        if permission_check:
+            return permission_check
         try:
             post = get_object_or_404(Post, id=post_id)
             
@@ -439,9 +489,14 @@ class BanPost(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-class UnBanUser(APIView):
+class UnBanUser(APIView, StaffPermissionMixin):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def put(self, request, user_id):
+        permission_check = self.check_staff_permission(request)
+        if permission_check:
+            return permission_check
         try:
             user = get_object_or_404(User, id=user_id)
             
@@ -467,9 +522,14 @@ class UnBanUser(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-class UnBanPost(APIView):
+class UnBanPost(APIView, StaffPermissionMixin):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def put(self, request, post_id):
+        permission_check = self.check_staff_permission(request)
+        if permission_check:
+            return permission_check
         try:
             post = get_object_or_404(Post, id=post_id)
             

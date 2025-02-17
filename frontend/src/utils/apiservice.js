@@ -5,7 +5,9 @@ export const fetchDashboardData = async () => {
     const response = await axiosInstance.get("/api/dashboard/stats");
     return response.data;
   } catch (error) {
-    console.error("Error fetching dashboard data:", error);
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/';
+    }
     throw error;
   }
 };
@@ -16,6 +18,9 @@ export const fetchDashboardUsers = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching users:", error);
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/';
+    }
     throw error;
   }
 };
@@ -26,6 +31,9 @@ export const fetchDashboardPosts = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching posts:", error);
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/';
+    }
     throw error;
   }
 };
@@ -36,6 +44,9 @@ export const banUser = async (userId) => {
     return response.data;
   } catch (error) {
     console.error("Error banning user:", error);
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/';
+    }
     throw error;
   }
 };
@@ -46,6 +57,9 @@ export const banPost = async (postId) => {
     return response.data;
   } catch (error) {
     console.error("Error banning post:", error);
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/';
+    }
     throw error;
   }
 };
@@ -56,6 +70,9 @@ export const unbanUser = async (userId) => {
     return response.data;
   } catch (error) {
     console.error("Error unbanning user:", error);
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/';
+    }
     throw error;
   }
 };
@@ -66,6 +83,9 @@ export const unbanPost = async (postId) => {
     return response.data;
   } catch (error) {
     console.error("Error unbanning post:", error);
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/';
+    }
     throw error;
   }
 };
