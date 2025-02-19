@@ -280,9 +280,9 @@ const PostDetailPage = () => {
 
   const BookmarkSymbol = () => {
     if (bookMark) {
-      return "★";
+      return <span className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 mx-3 rounded">★</span>;
     } else {
-      return "☆";
+      return <span className="bg-gray-200 hover:bg-gray-500 text-black font-bold py-1 px-2 mx-3 rounded">☆</span>;
     }
   };
 
@@ -369,7 +369,7 @@ const PostDetailPage = () => {
                 <span className="relative inline-block">
                   {postData.title}
                   {isAuthenticated() && (
-                    <button onClick={handleBookmark}>
+                    <button className="" onClick={handleBookmark}>
                       <BookmarkSymbol />
                     </button>
                   )}

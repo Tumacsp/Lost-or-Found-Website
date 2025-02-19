@@ -1810,6 +1810,7 @@ function makeCard(id, picture_name, category, title, reward, stats){
     
 }
 const Poster = () =>{
+    //For a list of all active poster
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const [postsData, setPostData] = useState([{title:"", status:'', category:''}])
