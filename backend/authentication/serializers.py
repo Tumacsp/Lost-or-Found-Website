@@ -46,7 +46,7 @@ class LoginSerializer(serializers.Serializer):
                 )
                 if not user.is_active:
                     raise serializers.ValidationError({
-                        'non_field_errors': ['This account has been disabled.']
+                        'non_field_errors': ['This account has been banned. Please contact support']
                     })
                 
                 if authenticated_user is None:
