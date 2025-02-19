@@ -40,17 +40,18 @@ class LoginSerializer(serializers.Serializer):
         if email and password:
             try:
                 user = User.objects.get(email=email)
-                user = authenticate(
+                authenticated_user  = authenticate(
                     username=user.username,
                     password=password
                 )
-                if not user:
-                    raise serializers.ValidationError({
-                        'non_field_errors': ['Incorrect email or password.']
-                    })
                 if not user.is_active:
                     raise serializers.ValidationError({
                         'non_field_errors': ['This account has been disabled.']
+                    })
+                
+                if authenticated_user is None:
+                    raise serializers.ValidationError({
+                        'non_field_errors': ['Incorrect email or password.']
                     })
             except User.DoesNotExist:
                 raise serializers.ValidationError({
