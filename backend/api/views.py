@@ -363,7 +363,7 @@ class DashboardStatsAPI(APIView, StaffPermissionMixin):
         
         try:
             # ข้อมูลพื้นฐาน
-            total_users = User.objects.count()
+            total_users = User.objects.filter(is_staff=False).count()
             total_posts = Post.objects.count()
             active_posts = Post.objects.filter(status='active').count()
             resolved_posts = Post.objects.filter(status='resolved').count()

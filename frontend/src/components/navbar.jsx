@@ -12,17 +12,9 @@ const Navbar = () => {
     setIsLoggedIn(isAuthenticated());
   }, []);
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   setIsLoggedIn(!!token);
-  // }, []);
-
   const handleLogout = async () => {
     try {
       await logout();
-      // await axiosInstance.post("auth/logout/");
-      // localStorage.removeItem("token");
-      // delete axiosInstance.defaults.headers.common["Authorization"];
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
@@ -53,16 +45,16 @@ const Navbar = () => {
                 Home
               </Link>
               <Link
-                to="/report"
-                className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition duration-200"
-              >
-                Report
-              </Link>
-              <Link
                 to="/search"
                 className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition duration-200"
               >
                 Search
+              </Link>
+              <Link
+                to="/report"
+                className="px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition duration-200"
+              >
+                Report
               </Link>
               <Link
                 to="/bookmark"
@@ -145,13 +137,6 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              to="/report"
-              className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Report
-            </Link>
-            <Link
               to="/search"
               className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
@@ -159,11 +144,18 @@ const Navbar = () => {
               Search
             </Link>
             <Link
-              to="/contact"
+              to="/report"
               className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Contact
+              Report
+            </Link>
+            <Link
+              to="/bookmark"
+              className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Bookmark
             </Link>
             {isLoggedIn ? (
               <>

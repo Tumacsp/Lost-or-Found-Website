@@ -39,20 +39,6 @@ const LoginPage = () => {
       } else {
         navigate("/");
       }
-
-      // const response = await axiosInstance.post("auth/login/", formData);
-      // localStorage.setItem("token", response.data.token);
-      // axiosInstance.defaults.headers.common[
-      //   "Authorization"
-      // ] = `Token ${response.data.token}`;
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     id: response.data.user_id,
-      //     username: response.data.username,
-      //   })
-      // );
-      // navigate("/");
     } catch (err) {
       setErrors(err);
     } finally {

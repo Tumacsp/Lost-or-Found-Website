@@ -100,12 +100,15 @@ const UsersPage = () => {
       </div>
     );
 
-  if (error)
+  if (error) {
     return (
-      <div className="p-4 bg-red-50 text-red-600 rounded-lg">
-        Error: {error}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="flex h-96 items-center justify-center">
+          <p className="text-lg text-red-500">{error}</p>
+        </div>
       </div>
     );
+  }
 
   const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
   const startIndex = (currentPage - 1) * USERS_PER_PAGE;

@@ -36,18 +36,6 @@ const RegisterPage = () => {
 
     try {
       await register(formData);
-      // const response = await axiosInstance.post("auth/register/", formData);
-      // localStorage.setItem("token", response.data.token);
-      // axiosInstance.defaults.headers.common[
-      //   "Authorization"
-      // ] = `Token ${response.data.token}`;
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     id: response.data.user_id,
-      //     username: response.data.username,
-      //   })
-      // );
       navigate("/");
     } catch (err) {
       setErrors(err);

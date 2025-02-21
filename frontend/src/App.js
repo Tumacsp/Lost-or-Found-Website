@@ -1,6 +1,7 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation} from "react-router-dom";
 import Layout from './components/ui/admin/layout';
+import NotFoundPage from "./pages/404_notfound";
 import MainPage from "./pages/main_page";
 import LoginPage from "./pages/auth/login_page";
 import SignupPage from "./pages/auth/signup_page";
@@ -31,9 +32,43 @@ const PublicOnlyRoute = ({ children }) => {
   return children;
 };
 
+const PageTitleUpdater = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const titles = {
+      "/": "Lost or Found",
+      "/search": "Search | Lost or Found",
+      "/login": "Login | Lost or Found",
+      "/signup": "Sign Up | Lost or Found",
+      "/forgot-password": "Forgot Password | Lost or Found",
+      "/verify-token": "Verify Token | Lost or Found",
+      "/profile": "Profile | Lost or Found",
+      "/report": "Report | Lost or Found",
+      "/bookmark": "Bookmarks | Lost or Found",
+      "/admin-dashboard": "Admin Dashboard | Lost or Found",
+      "/admin-dashboard/users": "Manage Users | Lost or Found",
+      "/admin-dashboard/posts": "Manage Posts | Lost or Found",
+    };
+
+    let title = titles[location.pathname] || "404 Not Found | Lost or Found";
+
+    if (location.pathname.startsWith("/postdetail/")) {
+      title = "Post Detail | MyApp";
+    } else if (location.pathname.startsWith("/reset-password/")) {
+      title = "Reset Password | MyApp";
+    }
+
+    document.title = title;
+  }, [location.pathname]);
+
+  return null;
+};
+
 const App = () => {
   return (
     <Router>
+      <PageTitleUpdater />
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/search" element={<SearchPage />} />
@@ -52,6 +87,8 @@ const App = () => {
         <Route path="/admin-dashboard" element={<ProtectedRoute> <Layout> <DashboardPage /> </Layout> </ProtectedRoute>} />
         <Route path="/admin-dashboard/users" element={<ProtectedRoute> <Layout> <UsersPage /> </Layout> </ProtectedRoute>} />
         <Route path="/admin-dashboard/posts" element={<ProtectedRoute> <Layout> <PostsPage /> </Layout> </ProtectedRoute>} />
+        {/* another path not foundable in website */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );
