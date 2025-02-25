@@ -16,7 +16,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex h-full flex-col px-3 py-4 md:px-2">
+    <div className="flex h-full flex-col px-3 py-4 md:px-2 bg-white shadow-lg shadow-gray-200 rounded-r-lg border-r border-gray-100">
       <Link
         className="mb-2 flex h-20 flex-col items-center justify-center rounded-md bg-blue-600 p-4 md:h-40"
         to="/admin-dashboard"
