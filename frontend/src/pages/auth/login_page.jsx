@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { login } from "../../utils/auth";
+import { login, isStaffUser } from "../../utils/auth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -33,8 +33,8 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const authData = await login(formData);
-      if (authData.is_staff) {
+      await login(formData);
+      if (isStaffUser()) {
         navigate("/admin-dashboard");
       } else {
         navigate("/");

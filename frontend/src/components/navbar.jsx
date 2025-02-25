@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
-import { logout, isAuthenticated } from "../utils/auth";
+import { logout, isAuthenticated, isStaffUser } from "../utils/auth";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isStaff, setIsStaff] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setIsLoggedIn(isAuthenticated());
+    setIsStaff(isStaffUser());
   }, []);
 
   const handleLogout = async () => {
@@ -68,6 +70,18 @@ const Navbar = () => {
           <div className="hidden md:flex md:items-center md:space-x-4">
             {isLoggedIn ? (
               <>
+                {/* staff */}
+                {isStaff && (
+                  <Link
+                    to="/admin-dashboard"
+                    className="px-4 py-2 text-gray-700 bg-gray-300 border border-gray-400 
+               rounded-lg shadow-md hover:bg-gray-400 hover:text-white 
+               hover:shadow-lg transition-all duration-200"
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
+                {/* profile */}
                 <Link
                   to="/profile"
                   className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition duration-200"
@@ -75,6 +89,7 @@ const Navbar = () => {
                   <User className="w-5 h-5 mr-2" />
                   Profile
                 </Link>
+                {/* logout */}
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition duration-200"
@@ -136,6 +151,7 @@ const Navbar = () => {
             >
               Home
             </Link>
+
             <Link
               to="/search"
               className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
@@ -143,6 +159,7 @@ const Navbar = () => {
             >
               Search
             </Link>
+
             <Link
               to="/report"
               className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
@@ -150,6 +167,7 @@ const Navbar = () => {
             >
               Report
             </Link>
+
             <Link
               to="/bookmark"
               className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
@@ -157,8 +175,23 @@ const Navbar = () => {
             >
               Bookmark
             </Link>
+
             {isLoggedIn ? (
               <>
+                {/* staff */}
+                {isStaff && (
+                  <Link
+                    to="/admin-dashboard"
+                    className="block px-4 py-2 text-gray-800 font-semibold bg-gray-200 
+               rounded-lg shadow-md hover:bg-gray-300 hover:text-gray-900 
+               hover:shadow-lg transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
+
+                {/* profile */}
                 <Link
                   to="/profile"
                   className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
@@ -166,6 +199,8 @@ const Navbar = () => {
                 >
                   Profile
                 </Link>
+
+                {/* logout */}
                 <button
                   onClick={() => {
                     handleLogout();

@@ -14,6 +14,7 @@ export const login = async (formData) => {
       JSON.stringify({
         id: authData.user_id,
         username: authData.username,
+        is_staff: authData.is_staff,
       })
     );
 
@@ -58,7 +59,7 @@ export const register = async (formData) => {
         username: authData.username,
       })
     );
-    console.log(authData.user_id)
+    console.log(authData.user_id);
 
     return authData;
   } catch (error) {
@@ -99,4 +100,9 @@ export const logout = async () => {
 export const isAuthenticated = () => {
   const token = localStorage.getItem("token");
   return !!token;
+};
+
+export const isStaffUser = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user?.is_staff === true;
 };
