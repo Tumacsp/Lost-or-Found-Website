@@ -78,6 +78,10 @@ const SearchPage = () => {
             </div>
           </div>
           <div className="flex flex-wrap">
+=======
+            </div>
+          <div className='flex flex-wrap justify-center'>
+>>>>>>> Stashed changes
             <Result />
           </div>
         </div>

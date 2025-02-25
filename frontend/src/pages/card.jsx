@@ -1831,7 +1831,7 @@ const Poster = () =>{
   }, []);
     const cards = postsData.map((data) => makeCard(data.id, data.picture_name, data.category, data.title, data.reward, data.status));
     return (
-        <div className='flex flex-wrap'>
+        <div className='flex flex-wrap justify-center'>
                 {cards}
         </div>
     )

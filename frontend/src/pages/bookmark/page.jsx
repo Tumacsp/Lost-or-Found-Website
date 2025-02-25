@@ -43,7 +43,7 @@ const Bookmark = () => {
       <main className="flex-grow">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-4">Bookmarked Posts</h2>
-          <div className='flex flex-wrap'>
+          <div className='flex flex-wrap justify-center'>
             <Result />
           </div>
         </div>

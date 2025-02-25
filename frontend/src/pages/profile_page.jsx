@@ -461,7 +461,7 @@ const Profile = () => {
       {/* My posts */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 text-center">My Posts</h1>
-        <div className='flex flex-wrap'>
+        <div className='flex flex-wrap justify-center'>
           <Result/>
         </div>
       </div>
