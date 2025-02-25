@@ -21,6 +21,7 @@ urlpatterns = [
     path('posts/found/<int:post_id>', PostFoundView.as_view(), name="post-found"),
     path('posts/<int:post_id>/ban', BanPost.as_view(), name='ban-post'),
     path('posts/<int:post_id>/unban', UnBanPost.as_view(), name='unban-post'),
+    path('myposts/', PostView.as_view(), name='get-my-post'),
 
     #search post
     path('search/<str:terms>', Search.as_view(), name='get-post-by-title'),
