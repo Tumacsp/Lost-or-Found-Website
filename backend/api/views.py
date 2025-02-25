@@ -554,4 +554,11 @@ class UnBanPost(APIView, StaffPermissionMixin):
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        
+
+class MyPost(APIView):
+    authentication_classes = [TokenAuthentication]
+    def get(self, request):
+        user = request.user
+        myPosts = Post.objects.filter(user=user)
+        serializer = PostSerializer(myPosts, many=True, context={'request': request})
+        return Response(serializer.data)

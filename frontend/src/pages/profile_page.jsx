@@ -5,6 +5,7 @@ import axiosInstance from "../utils/axios";
 import { handleError } from "../utils/errorHandler";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
+import { makeCard } from "./card";
 
 const Profile = () => {
   // profile
@@ -18,6 +19,8 @@ const Profile = () => {
   });
   const [originalProfile, setOriginalProfile] = useState(null);
   const navigate = useNavigate();
+  // my posts
+  const [postsData, setPostData] = useState([])
 
   // status
   const [isEditing, setIsEditing] = useState(false);
@@ -57,6 +60,8 @@ const Profile = () => {
       setProfile(response.data);
       setOriginalProfile(response.data);
       setPreviewImage(response.data.profile_picture);
+      const postresponse = await axiosInstance.get("api/myposts");
+      setPostData(postresponse.data)
       setError("");
     } catch (err) {
       handleError(err, setError, navigate);
@@ -166,6 +171,15 @@ const Profile = () => {
     }
   };
 
+  // Card construction
+  const cards = postsData.map((data) => makeCard(data.id, data.picture_name, data.category, data.title, data.reward, data.status));
+  function Result(){
+    if(postsData.length > 0){
+      return cards
+    }else{
+      return (<h3 className="text-lg sm:text-xl font-semibold mb-2">No Posts Found</h3>)
+    }
+  }
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -443,6 +457,14 @@ const Profile = () => {
           </div>
         </div>
       )}
+
+      {/* My posts */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 text-center">My Posts</h1>
+        <div className='flex flex-wrap'>
+          <Result/>
+        </div>
+      </div>
 
       <Footer />
     </div>
