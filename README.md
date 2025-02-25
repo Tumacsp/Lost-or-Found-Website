@@ -68,7 +68,12 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 5. ติดตั้ง Frontend Dependencies
+### 5. สร้าง SuperUser ใน Django
+```bash
+python manage.py createsuperuser
+```
+
+### 6. ติดตั้ง Frontend Dependencies
 เปิด Terminal หรือ Command Prompt อีกหนึ่งหน้าต่าง แล้วเข้าสู่โฟลเดอร์ frontend เพื่อติดตั้ง Node.js dependencies:
 ```bash
 cd frontend
