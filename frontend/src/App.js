@@ -16,7 +16,7 @@ import Bookmark from "./pages/bookmark/page";
 import DashboardPage from './pages/admin/dashboard';
 import UsersPage from './pages/admin/user_page';
 import PostsPage from './pages/admin/post_page';
-import { isAuthenticated } from "./utils/auth";
+import { isAuthenticated, isStaffUser } from "./utils/auth";
 
 const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated()) {
@@ -31,6 +31,17 @@ const PublicOnlyRoute = ({ children }) => {
   }
   return children;
 };
+
+const StaffProtectedRoute = ({ children }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  if (!isStaffUser()) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
+
 
 const PageTitleUpdater = () => {
   const location = useLocation();
@@ -84,9 +95,9 @@ const App = () => {
         <Route path="/report" element={<ProtectedRoute> <ReportPage /> </ProtectedRoute>} />
         <Route path="/bookmark" element={<ProtectedRoute> <Bookmark /> </ProtectedRoute>} />
         {/* dashbaord */}
-        <Route path="/admin-dashboard" element={<ProtectedRoute> <Layout> <DashboardPage /> </Layout> </ProtectedRoute>} />
-        <Route path="/admin-dashboard/users" element={<ProtectedRoute> <Layout> <UsersPage /> </Layout> </ProtectedRoute>} />
-        <Route path="/admin-dashboard/posts" element={<ProtectedRoute> <Layout> <PostsPage /> </Layout> </ProtectedRoute>} />
+        <Route path="/admin-dashboard" element={<StaffProtectedRoute> <Layout> <DashboardPage /> </Layout> </StaffProtectedRoute>} />
+        <Route path="/admin-dashboard/users" element={<StaffProtectedRoute> <Layout> <UsersPage /> </Layout> </StaffProtectedRoute>} />
+        <Route path="/admin-dashboard/posts" element={<StaffProtectedRoute> <Layout> <PostsPage /> </Layout> </StaffProtectedRoute>} />
         {/* another path not foundable in website */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
