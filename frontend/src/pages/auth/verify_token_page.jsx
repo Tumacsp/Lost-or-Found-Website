@@ -55,7 +55,7 @@ const VerifyTokenPage = () => {
               type="text"
               value={token}
               onChange={(e) => setToken(e.target.value)}
-              placeholder="Enter 6-digit code"
+              placeholder="Enter code from email here"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
