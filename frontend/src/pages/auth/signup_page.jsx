@@ -176,18 +176,6 @@ const RegisterPage = () => {
             </Link>
           </p>
         </div>
-
-        <p className="text-sm text-gray-500 text-center mt-6">
-          By clicking continue, you agree to our{" "}
-          <Link to="/terms" className="text-green-500 hover:underline">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link to="/privacy" className="text-green-500 hover:underline">
-            Privacy Policy
-          </Link>
-          .
-        </p>
       </div>
     </div>
   );
