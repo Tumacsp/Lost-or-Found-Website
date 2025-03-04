@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Camera, Lock, X } from "lucide-react";
 import axiosInstance from "../utils/axios";
@@ -6,6 +6,7 @@ import { handleError } from "../utils/errorHandler";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { makeCard } from "./card";
+import SkeletonCard from "../components/ui/skeletoncard";
 
 const Profile = () => {
   // profile
@@ -20,7 +21,7 @@ const Profile = () => {
   const [originalProfile, setOriginalProfile] = useState(null);
   const navigate = useNavigate();
   // my posts
-  const [postsData, setPostData] = useState([])
+  const [postsData, setPostData] = useState([]);
 
   // status
   const [isEditing, setIsEditing] = useState(false);
@@ -42,10 +43,6 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  useEffect(() => {
     if (profileSuccessMessage) {
       const timer = setTimeout(() => {
         setProfileSuccessMessage("");
@@ -54,19 +51,24 @@ const Profile = () => {
     }
   }, [profileSuccessMessage]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
+    setIsLoading(true);
     try {
       const response = await axiosInstance.get("api/profile/");
       setProfile(response.data);
       setOriginalProfile(response.data);
       setPreviewImage(response.data.profile_picture);
+
       const postresponse = await axiosInstance.get("api/myposts");
-      setPostData(postresponse.data)
+      setPostData(postresponse.data);
+
       setError("");
     } catch (err) {
       handleError(err, setError, navigate);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -171,13 +173,40 @@ const Profile = () => {
     }
   };
 
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
   // Card construction
-  const cards = postsData.map((data) => makeCard(data.id, data.picture_name, data.category, data.title, data.reward, data.status));
-  function Result(){
-    if(postsData.length > 0){
-      return cards
-    }else{
-      return (<h3 className="text-lg sm:text-xl font-semibold mb-2">No Posts Found</h3>)
+  const cards = postsData.map((data) =>
+    makeCard(
+      data.id,
+      data.picture_name,
+      data.category,
+      data.title,
+      data.reward,
+      data.status
+    )
+  );
+  function Result({ loading }) {
+    if (loading) {
+      return (
+        <div className="flex flex-wrap justify-center">
+          {[...Array(5)].map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      );
+    }
+
+    if (postsData.length > 0) {
+      return cards;
+    } else {
+      return (
+        <h3 className="text-lg sm:text-xl font-semibold mb-2">
+          No Posts Found
+        </h3>
+      );
     }
   }
   return (
@@ -460,9 +489,11 @@ const Profile = () => {
 
       {/* My posts */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 text-center">My Posts</h1>
-        <div className='flex flex-wrap justify-center'>
-          <Result/>
+        <h1 className="text-2xl font-bold text-gray-900 text-center">
+          My Posts
+        </h1>
+        <div className="flex flex-wrap justify-center">
+          <Result loading={isLoading} />
         </div>
       </div>
 

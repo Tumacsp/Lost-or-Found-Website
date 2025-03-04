@@ -38,7 +38,6 @@ const PostsPage = () => {
 
   const loadPosts = async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       const data = await fetchDashboardPosts();
       setPosts(data);
     } catch (err) {

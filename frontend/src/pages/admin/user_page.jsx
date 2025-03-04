@@ -37,7 +37,6 @@ const UsersPage = () => {
 
   const loadUsers = async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       const data = await fetchDashboardUsers();
       setUsers(data);
     } catch (err) {

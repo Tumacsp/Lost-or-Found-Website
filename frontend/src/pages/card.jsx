@@ -4,6 +4,7 @@ import '../App.css';
 import axiosInstance from "../utils/axios";
 import { handleError } from "../utils/errorHandler";
 import { Link } from 'react-router-dom';
+import SkeletonCard from "../components/ui/skeletoncard";
 
 function makeCard(id, picture_name, category, title, reward, stats){
     const type = (category === 'object') ? (<text className="cls-143" transform="translate(124.71 133.5) scale(1.52 1)"><tspan x="0" y="0">Dead or Alive</tspan></text>) : (
@@ -1808,34 +1809,54 @@ function makeCard(id, picture_name, category, title, reward, stats){
         </Link>
     )
     
-}
-const Poster = () =>{
+}const Poster = () => {
     //For a list of all active poster
     const [error, setError] = useState("");
     const navigate = useNavigate();
-    const [postsData, setPostData] = useState([{title:"", status:'', category:''}])
-
-    const fetchPost = async() =>{
-        try {
-            const response = await axiosInstance.get("api/posts/");
-            setPostData(response.data)
-            // console.log(response.data)
-            setError("");
-        } catch (err) {
-            handleError(err, setError, navigate);
-        }
-    }
-
-  useEffect(() => {
-    fetchPost();
-  }, []);
-    const cards = postsData.map((data) => makeCard(data.id, data.picture_name, data.category, data.title, data.reward, data.status));
-    return (
-        <div className='flex flex-wrap justify-center'>
-                {cards}
+    const [postsData, setPostData] = useState([
+      { title: "", status: "", category: "" },
+    ]);
+    const [isLoading, setIsLoading] = useState(true);
+  
+    const fetchPost = async () => {
+      setIsLoading(true); // เริ่มต้น loading
+      try {
+        const response = await axiosInstance.get("api/posts/");
+        setPostData(response.data);
+        setError("");
+      } catch (err) {
+        handleError(err, setError, navigate);
+      } finally {
+        setIsLoading(false); // จบ loading ไม่ว่าจะสำเร็จหรือไม่
+      }
+    };
+  
+    useEffect(() => {
+      fetchPost();
+    }, []);
+  
+    if (isLoading) {
+      return (
+        <div className="flex flex-wrap justify-center">
+          {[...Array(5)].map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
         </div>
-    )
-}
-
-export default Poster
-export {makeCard}
+      );
+    }
+  
+    const cards = postsData.map((data) =>
+      makeCard(
+        data.id,
+        data.picture_name,
+        data.category,
+        data.title,
+        data.reward,
+        data.status
+      )
+    );
+    return <div className="flex flex-wrap justify-center">{cards}</div>;
+  };
+  
+  export default Poster;
+  export { makeCard };

@@ -11,7 +11,6 @@ const DashboardPage = () => {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
         const data = await fetchDashboardData();
         setDashboardData(data);
       } catch (err) {

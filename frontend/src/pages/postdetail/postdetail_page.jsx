@@ -46,15 +46,7 @@ const PostDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
-  const [alert, setAlert] = useState({
-    isOpen: false,
-    type: "success",
-    message: "",
-  });
 
-  const handleCloseAlert = () => {
-    setAlert((prev) => ({ ...prev, isOpen: false }));
-  };
   const currentUser = JSON.parse(localStorage.getItem("user")) || {};
 
   const [editForm, setEditForm] = useState({
@@ -175,6 +167,10 @@ const PostDetailPage = () => {
 
   useEffect(() => {
     if (postData?.location) {
+      setLocation({
+        lat: postData.location.latitude,
+        lon: postData.location.longitude,
+      });
       getAddressFromCoords(
         postData.location.latitude,
         postData.location.longitude
@@ -269,8 +265,8 @@ const PostDetailPage = () => {
         setMarked(false);
       }
     } catch (error) {
-      console.error("Error creating report:", error);
-      setAlert({
+      console.error("Error bookmarking:", error);
+      setAlertModal({
         isOpen: true,
         type: "error",
         message: error.response?.data?.message || "Error bookmarking",
@@ -280,9 +276,17 @@ const PostDetailPage = () => {
 
   const BookmarkSymbol = () => {
     if (bookMark) {
-      return <span className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 mx-3 rounded">★</span>;
+      return (
+        <span className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 mx-3 rounded">
+          ★
+        </span>
+      );
     } else {
-      return <span className="bg-gray-200 hover:bg-gray-500 text-black font-bold py-1 px-2 mx-3 rounded">☆</span>;
+      return (
+        <span className="bg-gray-200 hover:bg-gray-500 text-black font-bold py-1 px-2 mx-3 rounded">
+          ☆
+        </span>
+      );
     }
   };
 
@@ -550,8 +554,8 @@ const PostDetailPage = () => {
                     <MapDragLaLongComponent
                       onLocationChange={setLocation}
                       initialLocation={{
-                        lat: postData?.location?.latitude || 13.764953,
-                        lon: postData?.location?.longitude || 100.538316,
+                        lat: postData.location.latitude,
+                        lon: postData.location.longitude,
                       }}
                     />
                   </div>

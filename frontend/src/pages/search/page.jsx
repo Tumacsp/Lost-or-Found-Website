@@ -1,33 +1,39 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useCallback } from "react";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import axiosInstance from "../../utils/axios";
 import { handleError } from "../../utils/errorHandler";
 import { useNavigate } from "react-router-dom";
 import { makeCard } from "../card";
+import SkeletonCard from "../../components/ui/skeletoncard";
 
 const SearchPage = () => {
   const [error, setError] = useState("");
   const [terms, setTerm] = useState("");
   const navigate = useNavigate();
   const [postsData, setPostData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   function search() {
-    // console.log("Finding Post with Title:" + terms)
     fetchPost();
   }
-  const fetchPost = async () => {
+
+  const fetchPost = useCallback(async () => {
+    setIsLoading(true);
     try {
       const response = await axiosInstance.get("api/search/" + terms);
       setPostData(response.data);
-      // console.log("Post Found", response.data)
       setError("");
     } catch (err) {
       handleError(err, setError, navigate);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [terms, navigate]);
+
   useEffect(() => {
     fetchPost();
-  }, []);
+  }, [fetchPost]);
 
   function handleSearchChange(e) {
     setTerm(e.target.value);
@@ -42,17 +48,29 @@ const SearchPage = () => {
       data.status
     )
   );
+
   function Result() {
+    if (isLoading) {
+      return (
+        <div className="flex flex-wrap justify-center">
+          {[...Array(5)].map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      );
+    }
+
     if (postsData.length > 0) {
       return cards;
     } else {
       return (
-        <h3 className="text-lg sm:text-xl font-semibold mb-2">
+        <h3 className="text-lg sm:text-xl font-semibold mb-2 text-center w-full">
           No Posts Found
         </h3>
       );
     }
   }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -77,9 +95,11 @@ const SearchPage = () => {
               </button>
             </div>
           </div>
-          <div className="flex flex-wrap">
-            </div>
-          <div className='flex flex-wrap justify-center'>
+          {error && (
+            <div className="text-red-500 text-center mb-4">{error}</div>
+          )}
+          <div className="flex flex-wrap"></div>
+          <div className="flex flex-wrap justify-center">
             <Result />
           </div>
         </div>
