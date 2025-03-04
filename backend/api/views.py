@@ -88,7 +88,7 @@ class ProfileChangePassword(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def put(self, request):
         """Handle password change"""
         try:
             user = request.user

@@ -33,5 +33,4 @@ urlpatterns = [
 
     #dashboard
     path('dashboard/stats/', DashboardStatsAPI.as_view(), name='dashboard-stats'),
-
 ]

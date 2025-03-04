@@ -125,7 +125,7 @@ const Profile = () => {
     setIsLoading(true);
 
     try {
-      await axiosInstance.post("api/profile/change-password/", {
+      await axiosInstance.put("api/profile/change-password/", {
         old_password: passwords.old_password,
         new_password: passwords.new_password,
       });
