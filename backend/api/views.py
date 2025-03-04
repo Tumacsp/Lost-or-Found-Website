@@ -311,7 +311,7 @@ class Search(APIView):
 
 class BookmarkView(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request, post_id=None):
         """get an array of posts"""
