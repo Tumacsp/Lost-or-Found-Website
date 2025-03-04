@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Edit, Trash2, AlertCircle, CheckCircle2, X } from "lucide-react";
 import Navbar from "../../components/navbar";
@@ -15,8 +15,11 @@ import StatusBadge from "../../components/ui/postdetail/statusbadge";
 import LocationDetails from "../../components/ui/postdetail/locationdetails";
 
 const PostDetailPage = () => {
+  // ดึงค่า id จาก URL parameter ด้วย useParams hook
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // ข้อมูล
   const [postData, setPostData] = useState(null);
   const [bookMark, setMarked] = useState(false);
   const [location, setLocation] = useState({
@@ -24,13 +27,16 @@ const PostDetailPage = () => {
     lon: postData?.location?.longitude || 100.538316,
   });
 
+  // สถานะสำหรับแสดง Alert Modal เมื่อมีการแจ้งเตือนผู้ใช้
   const [alertModal, setAlertModal] = useState({
     isOpen: false,
     type: "success",
     message: "",
   });
 
+  // เก็บข้อความ error ที่เกิดขึ้น
   const [error, setError] = useState("");
+  // เก็บรายละเอียดที่อยู่ที่ได้จากพิกัด
   const [addressDetail, setAddressDetail] = useState({
     province: "",
     district: "",
@@ -38,17 +44,24 @@ const PostDetailPage = () => {
     road: "",
     postcode: "",
   });
+
+  // ข้อความแจ้งเตือน
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  // สถานะการโหลดข้อมูล
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [previewURL, setPreviewURL] = useState(null);
 
+  // เก็บไฟล์รูปภาพที่ผู้ใช้เลือกเมื่อต้องการอัปโหลดรูปใหม่
+  const [selectedImage, setSelectedImage] = useState(null);
+  // URL สำหรับแสดงตัวอย่างรูปภาพที่เลือก
+  const [previewURL, setPreviewURL] = useState(null);
+  // ดึงข้อมูลผู้ใช้ปัจจุบันจาก localStorage
   const currentUser = JSON.parse(localStorage.getItem("user")) || {};
 
+  // สถานะสำหรับเก็บข้อมูลฟอร์มแก้ไขโพสต์
   const [editForm, setEditForm] = useState({
     title: "",
     body_text: "",
@@ -60,7 +73,7 @@ const PostDetailPage = () => {
     },
   });
 
-  const fetchPostDetail = async () => {
+  const fetchPostDetail = useCallback(async () => {
     try {
       const check = await axiosInstance.get(`api/bookmark/${id}`);
       setMarked(check.bookmarked);
@@ -72,7 +85,7 @@ const PostDetailPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
 
   const handleFound = async () => {
     try {
@@ -147,7 +160,7 @@ const PostDetailPage = () => {
 
   useEffect(() => {
     fetchPostDetail();
-  }, [id]);
+  }, [id, fetchPostDetail]);
 
   useEffect(() => {
     if (postData) {
@@ -198,10 +211,6 @@ const PostDetailPage = () => {
       formData.append("status", editForm.status);
       formData.append("latitude", editForm.location.latitude);
       formData.append("longitude", editForm.location.longitude);
-
-      // formData.forEach((value, key) => {
-      //   console.log(key, value);
-      // });
 
       // เพิ่มรูปภาพถ้ามีการเลือก
       if (selectedImage) {
@@ -257,11 +266,10 @@ const PostDetailPage = () => {
   const handleBookmark = async () => {
     try {
       const response = await axiosInstance.post(`api/bookmark/${id}`);
-      // console.log(response)
       if (response.status === 201) {
         setMarked(true);
       } else if (response.status === 200) {
-        const response = await axiosInstance.delete(`api/bookmark/${id}`);
+        await axiosInstance.delete(`api/bookmark/${id}`);
         setMarked(false);
       }
     } catch (error) {
@@ -290,10 +298,12 @@ const PostDetailPage = () => {
     }
   };
 
+  // ฟังก์ชันสำหรับจัดการการเปลี่ยนรูปภาพ
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedImage(file);
+      // สร้าง URL ชั่วคราวสำหรับแสดงตัวอย่างรูปภาพ
       const fileURL = URL.createObjectURL(file);
       setPreviewURL(fileURL);
     }

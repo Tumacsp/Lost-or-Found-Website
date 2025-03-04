@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useCallback } from "react";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import axiosInstance from "../../utils/axios";
@@ -9,12 +9,11 @@ import SkeletonCard from "../../components/ui/skeletoncard";
 
 const Bookmark = () => {
   const [error, setError] = useState("");
-  const [terms, setTerm] = useState("");
   const navigate = useNavigate();
   const [postsData, setPostData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await axiosInstance.get("api/bookmark/");
@@ -25,11 +24,11 @@ const Bookmark = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     fetchPost();
-  }, []);
+  }, [fetchPost]);
 
   const cards = postsData.map((data) =>
     makeCard(
@@ -48,6 +47,14 @@ const Bookmark = () => {
           {[...Array(5)].map((_, index) => (
             <SkeletonCard key={index} />
           ))}
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="text-center text-red-500 text-lg font-semibold">
+          ⚠️ Error: {error}
         </div>
       );
     }
