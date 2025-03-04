@@ -19,7 +19,7 @@ const SearchPage = () => {
   }
 
   const fetchPost = useCallback(async () => {
-    setIsLoading(true);
+    setIsLoading(true);//Start loading
     try {
       const response = await axiosInstance.get("api/search/" + terms);
       setPostData(response.data);
@@ -27,7 +27,7 @@ const SearchPage = () => {
     } catch (err) {
       handleError(err, setError, navigate);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false);//stop loading
     }
   }, [terms, navigate]);
 
