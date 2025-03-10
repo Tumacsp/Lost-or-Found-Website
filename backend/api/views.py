@@ -175,9 +175,6 @@ class PostCreateView(APIView, StaffPermissionMixin):
     
     def put(self, request, post_id, *args, **kwargs):
         try:
-            print("Request Data:", request.data)  # ตรวจสอบค่าที่ส่งมาใน request
-            print("Request Files:", request.FILES)  # ดูว่ามีไฟล์อัปโหลดมาหรือไม่
-
             post = get_object_or_404(Post, id=post_id)
             
             if post.user != request.user:
