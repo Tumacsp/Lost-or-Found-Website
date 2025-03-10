@@ -306,6 +306,7 @@ class Search(APIView):
             return Response(serializer.data)
         else:
             posts = Post.objects.filter(title__icontains=terms) | Post.objects.filter(body_text__icontains=terms)
+            posts = posts.filter(status='active')
             serializer = PostSerializer(posts, many=True, context={'request': request})
             return Response(serializer.data)
 
