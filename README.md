@@ -109,7 +109,7 @@ npm start
 
 ```bash
 cd backend
-py -m venv myvenv # ถ้ายังไม่ได้ activate
+myvenv\Scripts\activate.bat # ถ้ายังไม่ได้ activate
 python manage.py runserver
 ```
 
