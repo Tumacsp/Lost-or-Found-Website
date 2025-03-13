@@ -112,3 +112,18 @@ cd backend
 py -m venv myvenv # ถ้ายังไม่ได้ activate
 python manage.py runserver
 ```
+
+### 3. ข้อมูล User เผื่อทดสอบ (สำหรับอาจารย์)
+
+```bash
+•	User (Password: Japan1234)
+1.	alice@example.com
+2.	bob@example.com
+3.	charlie@example.com
+4.	david@example.com
+5.	banexample@example.com
+6.	banexample2@example.com
+•	Staff : staff@example.com (Password: Japan1234)
+•	Admin : User: Admin, Password: 1234
+•	*ปล. Admin Login ที่: http://localhost:8000/admin
+```
