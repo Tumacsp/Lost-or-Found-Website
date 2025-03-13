@@ -102,6 +102,7 @@ EMAIL_HOST_PASSWORD = ''
 
 ```bash
 cd frontend
+npm run build
 npm start
 ```
 
